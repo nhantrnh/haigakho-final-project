@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .product-header {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .product-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .product-images {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .product-images img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-info .description {
+            margin-bottom: 15px;
+        }
+
+        .product-info .price {
+            font-size: 20px;
+            color: #e67e22;
+            margin-bottom: 15px;
+        }
+
+        .add-to-cart {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .add-to-cart:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="product-header">
+        <h1>Product Name</h1>
+    </div>
+    <div class="product-images">
+        <img src="https://via.placeholder.com/600x400" alt="Product Image">
+    </div>
+    <div class="product-info">
+        <p class="description">This is a detailed description of the product. It explains its features, benefits, and any other relevant information that may help the customer make a purchase decision.</p>
+        <p class="price">$99.99</p>
+        <a href="#" class="add-to-cart">Add to Cart</a>
+    </div>
+</div>
+
+</body>
+</html>
