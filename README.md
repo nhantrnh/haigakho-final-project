@@ -3,11 +3,10 @@
 ## Web Development
 ### Final Project
 
-**Database:** MongoDB Cloud
-**ORM:** Mongoose
-**Kiến trúc:** MVC
-**Framework:** Express, Nodejs
-
+ - **Database:** MongoDB Cloud
+ - **ORM:** Mongoose
+ - **Kiến trúc:** MVC
+ - **Framework:** Express, Nodejs
 
 # Demo
 
