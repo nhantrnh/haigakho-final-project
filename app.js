@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/hagako-web");
 
 // Routes
 app.use("/", require("./routes/pages"));
-app.use("/shop", require("./routes/shop"));
+app.use("/shop", require("./routes/products"));
 app.use("/", require("./routes/users"));
 
 const PORT = process.env.PORT || 3000;

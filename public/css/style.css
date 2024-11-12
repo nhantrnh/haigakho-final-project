@@ -193,7 +193,7 @@ a.more {
 }
 .hero p {
   color: rgba(255, 255, 255, 0.5);
-  margin-botom: 30px;
+  margin-bottom: 30px;
 }
 .hero .hero-img-wrap {
   position: relative;
@@ -436,7 +436,7 @@ a.more {
 .we-help-section .imgs-grid {
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: (1fr) [27];
+  grid-template-columns: repeat(27, 1fr);
   grid-template-columns: repeat(27, 1fr);
   position: relative;
 }
@@ -828,6 +828,10 @@ a.more {
   padding: 7rem 0;
 }
 
+.untree_co-section p {
+  font-size: 15px;
+}
+
 .form-control {
   height: 50px;
   border-radius: 10px;
@@ -956,6 +960,7 @@ textarea {
   display: block;
   width: 100%;
   -webkit-line-clamp: initial;
+  line-clamp: initial;
 }
 
 .product-name {
