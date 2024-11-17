@@ -1,17 +1,21 @@
 // app.js
 const express = require("express");
+const path = require("path"); // Add this at the top
 const mongoose = require("mongoose");
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
 // View engine
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views")); // Add this line
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/hagako-web");
