@@ -6,7 +6,11 @@ const productSchema = new mongoose.Schema({
   description: String,
   price: { type: Number, required: true },
   discount: { type: Number, default: 0 },
-  categoryId: { type: String, required: true },
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
   brand: { type: String, default: "No brand" },
   dimensions: {
     width: Number,
