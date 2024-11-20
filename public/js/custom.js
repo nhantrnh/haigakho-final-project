@@ -68,55 +68,55 @@
 })();
 
 // In public/js/custom.js
-document.addEventListener("DOMContentLoaded", () => {
-  const slider = document.getElementById("priceSlider");
-  const minPriceLabel = document.getElementById("priceMinLabel");
-  const maxPriceLabel = document.getElementById("priceMaxLabel");
-  const minPriceInput = document.getElementById("minPriceInput");
-  const maxPriceInput = document.getElementById("maxPriceInput");
+// document.addEventListener("DOMContentLoaded", () => {
+//   const slider = document.getElementById("priceSlider");
+//   const minPriceLabel = document.getElementById("priceMinLabel");
+//   const maxPriceLabel = document.getElementById("priceMaxLabel");
+//   const minPriceInput = document.getElementById("minPriceInput");
+//   const maxPriceInput = document.getElementById("maxPriceInput");
 
-  if (slider) {
-    // Get URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    const minPrice = slider.dataset.minprice
-      ? Number(slider.dataset.minprice)
-      : 0;
-    const maxPrice = slider.dataset.maxprice
-      ? Number(slider.dataset.maxprice)
-      : 10000;
+//   if (slider) {
+//     // Get URL params
+//     const urlParams = new URLSearchParams(window.location.search);
+//     const minPrice = slider.dataset.minprice
+//       ? Number(slider.dataset.minprice)
+//       : 0;
+//     const maxPrice = slider.dataset.maxprice
+//       ? Number(slider.dataset.maxprice)
+//       : 10000;
 
-    // Get current filter values from URL or use defaults
-    const currentMinPrice = Number(urlParams.get("minPrice")) || minPrice;
-    const currentMaxPrice = Number(urlParams.get("maxPrice")) || maxPrice;
+//     // Get current filter values from URL or use defaults
+//     const currentMinPrice = Number(urlParams.get("minPrice")) || minPrice;
+//     const currentMaxPrice = Number(urlParams.get("maxPrice")) || maxPrice;
 
-    noUiSlider.create(slider, {
-      start: [currentMinPrice, currentMaxPrice], // Use current values
-      connect: true,
-      range: {
-        min: minPrice,
-        max: maxPrice,
-      },
-      step: 1,
-      format: {
-        to: (value) => Math.round(value),
-        from: (value) => Number(value),
-      },
-    });
+//     noUiSlider.create(slider, {
+//       start: [currentMinPrice, currentMaxPrice], // Use current values
+//       connect: true,
+//       range: {
+//         min: minPrice,
+//         max: maxPrice,
+//       },
+//       step: 1,
+//       format: {
+//         to: (value) => Math.round(value),
+//         from: (value) => Number(value),
+//       },
+//     });
 
-    // Update labels and hidden inputs
-    slider.noUiSlider.on("update", (values) => {
-      const [min, max] = values;
-      minPriceLabel.innerText = `$${min}`;
-      maxPriceLabel.innerText = `$${max}`;
-      minPriceInput.value = min;
-      maxPriceInput.value = max;
-    });
+//     // Update labels and hidden inputs
+//     slider.noUiSlider.on("update", (values) => {
+//       const [min, max] = values;
+//       minPriceLabel.innerText = `$${min}`;
+//       maxPriceLabel.innerText = `$${max}`;
+//       minPriceInput.value = min;
+//       maxPriceInput.value = max;
+//     });
 
-    // Set initial input values
-    minPriceInput.value = currentMinPrice;
-    maxPriceInput.value = currentMaxPrice;
-  }
-});
+//     // Set initial input values
+//     minPriceInput.value = currentMinPrice;
+//     maxPriceInput.value = currentMaxPrice;
+//   }
+// });
 
 // public/js/custom.js
 document.addEventListener("DOMContentLoaded", () => {

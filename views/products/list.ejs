@@ -57,7 +57,7 @@
                 type="text"
                 name="keyword"
                 class="form-control"
-                placeholder="Search products..."
+                placeholder="Search products by name, description..."
                 value="<%= typeof keyword !== 'undefined' ? keyword : '' %>"
                 id="searchInput"
               />
@@ -67,11 +67,11 @@
             <div class="col-md-2">
               <button
                 type="button"
-                class="btn btn-outline-secondary"
+                class="btn btn-primary"
                 data-bs-toggle="modal"
                 data-bs-target="#filterModal"
               >
-                Filter
+                <i class="fas fa-filter me-2"></i>Filter
               </button>
             </div>
 
@@ -96,7 +96,7 @@
                       aria-label="Close"
                     ></button>
                   </div>
-                  <form action="/products" method="GET">
+                  <form>
                     <div class="modal-body">
                       <!-- Filter by Category -->
                       <h6>Category</h6>
@@ -158,23 +158,21 @@
 
                       <!-- Filter by Price -->
                       <h6>Price Range</h6>
-                      <div
-                        id="priceSlider"
-                        data-maxprice="<%= maxPrice || 10000 %>"
-                        data-minprice="<%= minPrice || 0 %>"
-                      ></div>
-                      <div class="d-flex justify-content-between mt-2">
-                        <span id="priceMinLabel"
-                          >$<%= minPrice || 10000 %></span
+                      <% priceRanges.forEach(function(range) { %>
+                      <div class="form-check">
+                        <input class="form-check-input me-1" type="checkbox"
+                        name="priceRange" value="<%= range.min %>-<%= range.max
+                        %>" id="price_<%= range.min %>_<%= range.max %>" <%=
+                        selectedPriceRanges.includes(range.min + '-' +
+                        range.max) ? 'checked' : '' %> />
+                        <label
+                          class="form-check-label"
+                          for="price_<%= range.min %>_<%= range.max %>"
                         >
-                        <span id="priceMaxLabel"
-                          >$<%= maxPrice || 10000 %></span
-                        >
+                          <%= range.label %>
+                        </label>
                       </div>
-                      <!-- Hidden inputs for price range -->
-                      <input type="hidden" name="minPrice" id="minPriceInput" />
-                      <input type="hidden" name="maxPrice" id="maxPriceInput" />
-                      <hr />
+                      <% }); %>
                     </div>
                     <div class="modal-footer">
                       <button
@@ -196,6 +194,26 @@
         </form>
       </div>
     </div>
+
+    <!-- In list.ejs -->
+    <% if (activeFilters && activeFilters.length > 0) { %>
+    <div class="container mt-3">
+      <div class="active-filters">
+        <% activeFilters.forEach(function(filter) { %>
+        <span class="filter-tag">
+          <%= filter.label %>
+          <a
+            href="?<%= removeFilterFromQuery(filter.type, filter.value) %>"
+            class="remove-filter"
+            >&times;</a
+          >
+        </span>
+        <% }); %> <% if (activeFilters.length > 1) { %>
+        <a href="/shop" class="btn btn-sm btn-outline-danger ms-2">Clear All</a>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
 
     <!-- Start Product Section -->
     <div class="untree_co-section product-section before-footer-section">

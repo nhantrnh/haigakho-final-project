@@ -1205,3 +1205,32 @@ p {
 .modal-content {
   border-radius: 10px;
 }
+
+/* public/css/style.css */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.filter-tag {
+  background: #3b5d50;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.remove-filter {
+  color: white;
+  margin-left: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.remove-filter:hover {
+  color: #ff4444;
+}
