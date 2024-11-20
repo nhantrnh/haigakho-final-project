@@ -101,5 +101,33 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/tiny-slider.js"></script>
     <script src="js/custom.js"></script>
+    <script>
+      document.getElementById("loginForm").addEventListener("submit", function(event) {
+        event.preventDefault(); 
+    
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+    
+        fetch("/signin", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username, password })
+        })
+          .then(response => {
+            if (response.ok) {
+              window.location.href = "/";
+            } else {
+              alert("Tên đăng nhập hoặc mật khẩu không đúng.");
+            }
+          })
+          .catch(error => {
+            console.error("Có lỗi xảy ra: ", error);
+            alert("Đã xảy ra lỗi khi đăng nhập.");
+          });
+      });
+    </script>
+    
   </body>
 </html>
