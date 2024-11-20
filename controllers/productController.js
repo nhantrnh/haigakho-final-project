@@ -2,156 +2,6 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
 
-// // Helper functions
-// const buildFilterUrl = (originalUrl, host) => {
-//   return (filterName, value) => {
-//     const currentUrl = new URL(originalUrl, `http://${host}`);
-//     const params = new URLSearchParams(currentUrl.search);
-
-//     if (Array.isArray(filterName)) {
-//       filterName.forEach((name) => params.delete(name));
-//     } else if (value) {
-//       const values = params.getAll(filterName);
-//       params.delete(filterName);
-//       values.forEach((v) => {
-//         if (v !== value) params.append(filterName, v);
-//       });
-//     } else {
-//       params.delete(filterName);
-//     }
-
-//     return `${currentUrl.pathname}?${params.toString()}`;
-//   };
-// };
-
-// const buildFilter = (query) => {
-//   const { keyword, category, material, brand } = query;
-//   let filter = {};
-
-//   // Search filter
-//   if (keyword) {
-//     filter.$or = [
-//       { name: { $regex: keyword, $options: "i" } },
-//       { description: { $regex: keyword, $options: "i" } },
-//     ];
-//   }
-
-//   // Category filter
-//   if (category) {
-//     filter.categoryId = {
-//       $in: Array.isArray(category) ? category : [category],
-//     };
-//   }
-
-//   // Material filter
-//   if (material) {
-//     filter.material = { $in: Array.isArray(material) ? material : [material] };
-//   }
-
-//   // Brand filter
-//   if (brand) {
-//     filter.brand = { $in: Array.isArray(brand) ? brand : [brand] };
-//   }
-
-//   // // Price filter
-//   // if (minPrice || maxPrice) {
-//   //   filter.price = {
-//   //     $gte: Number(minPrice) || 0,
-//   //     $lte: Number(maxPrice) || Number.MAX_SAFE_INTEGER,
-//   //   };
-//   // }
-
-//   return filter;
-// };
-
-// const buildPriceFilter = (query) => {
-//   const { minPrice, maxPrice } = query;
-//   if ("minPrice" in query || "maxPrice" in query) {
-//     return {
-//       $gte: Number(minPrice) || 0,
-//       $lte: Number(maxPrice) || Number.MAX_SAFE_INTEGER,
-//     };
-//   }
-//   return null;
-// };
-
-// // Controller
-// exports.getProducts = async (req, res) => {
-//   try {
-//     // 1. Xây dựng filter từ query params
-//     const filter = buildFilter(req.query);
-
-//     // 2. Thêm price filter chỉ khi có trong query params
-//     if ("minPrice" in req.query || "maxPrice" in req.query) {
-//       filter.price = {};
-//       if ("minPrice" in req.query) {
-//         filter.price.$gte = Number(req.query.minPrice);
-//       }
-//       if ("maxPrice" in req.query) {
-//         filter.price.$lte = Number(req.query.maxPrice);
-//       }
-//     }
-
-//     // 2. Lấy các selected values
-//     const selectedFilters = {
-//       categories: req.query.category
-//         ? Array.isArray(req.query.category)
-//           ? req.query.category
-//           : [req.query.category]
-//         : [],
-//       materials: req.query.material
-//         ? Array.isArray(req.query.material)
-//           ? req.query.material
-//           : [req.query.material]
-//         : [],
-//       brands: req.query.brand
-//         ? Array.isArray(req.query.brand)
-//           ? req.query.brand
-//           : [req.query.brand]
-//         : [],
-//     };
-
-//     // 3. Lấy data từ DB
-//     const [products, categories, materials, brands, priceRange] =
-//       await Promise.all([
-//         Product.find(filter).populate("categoryId", "name"),
-//         Category.find(),
-//         Product.distinct("material"),
-//         Product.distinct("brand"),
-//         Promise.all([
-//           Product.find().sort({ price: -1 }).limit(1),
-//           Product.find().sort({ price: 1 }).limit(1),
-//         ]),
-//       ]);
-
-//     // 4. Xử lý price range
-//     const [maxProduct, minProduct] = priceRange;
-//     const defaultMinPrice = minProduct[0]?.price || 0;
-//     const defaultMaxPrice = maxProduct[0]?.price || 10000000;
-
-//     // 5. Render view với data đã xử lý
-//     res.render("products/list", {
-//       products,
-//       categories,
-//       materials,
-//       brands,
-//       keyword: req.query.keyword || "",
-//       selectedCategories: selectedFilters.categories,
-//       selectedMaterials: selectedFilters.materials,
-//       selectedBrands: selectedFilters.brands,
-//       minPrice:
-//         "minPrice" in req.query ? Number(req.query.minPrice) : defaultMinPrice,
-//       maxPrice:
-//         "maxPrice" in req.query ? Number(req.query.maxPrice) : defaultMaxPrice,
-//       showPriceTag: "minPrice" in req.query || "maxPrice" in req.query,
-//       removeFilterUrl: buildFilterUrl(req.originalUrl, req.headers.host),
-//     });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).send("Server error");
-//   }
-// };
-
 exports.getProducts = async (req, res) => {
   try {
     const { keyword, category, material, brand, priceRange } = req.query; // Lấy danh sách category từ query params
@@ -316,7 +166,15 @@ exports.getProductDetail = async (req, res) => {
     if (!product) {
       return res.status(404).send("Không tìm thấy sản phẩm");
     }
-    res.render("products/detail", { product });
+    // Fetch related products from same category, excluding current product
+    const relatedProducts = await Product.find({
+      categoryId: product.categoryId._id,
+      _id: { $ne: product._id },
+    })
+      .limit(4) // Show max 4 related products
+      .populate("categoryId", "name");
+
+    res.render("products/detail", { product, relatedProducts });
   } catch (error) {
     console.error("Error:", error); // Thêm log
     res.status(500).send("Lỗi server");
