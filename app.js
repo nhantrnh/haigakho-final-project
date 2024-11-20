@@ -5,12 +5,25 @@ const mongoose = require("mongoose");
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+const session = require("express-session"); // Thêm import
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// session middleware
+app.use(
+  session({
+    secret: "hagako-web-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === "production" },
+  })
+);
+
+// Static files
 app.use(express.static(path.join(__dirname, "public")));
 
 // View engine

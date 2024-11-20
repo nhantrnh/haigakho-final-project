@@ -20,10 +20,46 @@ exports.signup = async (req, res) => {
     await user.save();
     res.redirect("/index");
   } catch (error) {
-    res.status(400).render("users/signup", { error: "Đăng ký thất bại" });
+    res.status(400).render("users/signup", { error: "Registration failed" });
   }
 };
 
 exports.getSignIn = (req, res) => {
   res.render("users/signin");
+};
+
+// Thêm phương thức signin
+exports.signin = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Tìm user theo username
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(400).render("users/signin", {
+        error: "Username does not exist",
+      });
+    }
+
+    // Kiểm tra mật khẩu
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).render("users/signin", {
+        error: "Incorrect password",
+      });
+    }
+
+    // Lưu thông tin user vào session
+    req.session.user = {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    };
+
+    res.redirect("/");
+  } catch (error) {
+    res.status(400).render("users/signin", {
+      error: "Login failed",
+    });
+  }
 };
