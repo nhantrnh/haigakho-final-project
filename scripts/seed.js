@@ -38,7 +38,7 @@ async function seedAll() {
         price: 449.0,
         discount: 0,
         categoryId: categories[2]._id,
-        brand: "No brand",
+        brand: "Toyota",
         dimensions: {
           width: 200,
           height: 90,
@@ -47,7 +47,7 @@ async function seedAll() {
         imageUrl: ["/images/erin-armchair.png"],
         stock: 10,
         material: "Leather",
-        colors: ["Black", "Brown"],
+        colors: ["Grey", "Brown"],
         ratings: {
           average: 4.5,
           count: 10,
@@ -62,7 +62,7 @@ async function seedAll() {
         price: 89.0,
         discount: 0,
         categoryId: categories[0]._id,
-        brand: "No brand",
+        brand: "Valio",
         dimensions: {
           width: 200,
           height: 90,
@@ -86,7 +86,7 @@ async function seedAll() {
         price: 449.0,
         discount: 0,
         categoryId: categories[0]._id,
-        brand: "No brand",
+        brand: "Valio",
         dimensions: {
           width: 200,
           height: 90,
@@ -95,7 +95,7 @@ async function seedAll() {
         imageUrl: "/images/angus-8-seat-dining-table.png",
         stock: 20,
         material: "Leather",
-        colors: ["Black", "Brown"],
+        colors: ["Black", "White"],
         ratings: {
           average: 4.5,
           count: 10,
@@ -110,7 +110,7 @@ async function seedAll() {
         price: 179.0,
         discount: 0,
         categoryId: categories[2]._id,
-        brand: "No brand",
+        brand: "Kakie",
         dimensions: {
           width: 200,
           height: 90,
@@ -118,8 +118,8 @@ async function seedAll() {
         },
         imageUrl: "/images/kenton-dining-chair.png",
         stock: 6,
-        material: "Leather",
-        colors: ["Black", "Brown"],
+        material: "Sustainable Boucle",
+        colors: ["Green", "Red"],
         ratings: {
           average: 4.5,
           count: 10,
@@ -143,7 +143,7 @@ async function seedAll() {
         imageUrl: "/images/arlet-accent-chair.png",
         stock: 14,
         material: "Leather",
-        colors: ["Black", "Brown"],
+        colors: ["Red", "Yellow"],
         ratings: {
           average: 4.5,
           count: 10,

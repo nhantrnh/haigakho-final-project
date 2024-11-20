@@ -13,13 +13,17 @@
     <meta name="keywords" content="bootstrap, bootstrap4" />
 
     <!-- Bootstrap CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
       rel="stylesheet"
     />
-    <link href="css/tiny-slider.css" rel="stylesheet" />
-    <link href="css/style.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css"
+    />
+    <link href="/css/tiny-slider.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
     <title>HAGAKO</title>
   </head>
 
@@ -42,6 +46,156 @@
       </div>
     </div>
     <!-- End Hero Section -->
+
+    <div class="search-section py-5">
+      <div class="container">
+        <form action="/shop" method="GET">
+          <div class="row">
+            <!-- Search Bar -->
+            <div class="col-md-10">
+              <input
+                type="text"
+                name="keyword"
+                class="form-control"
+                placeholder="Search products..."
+                value="<%= typeof keyword !== 'undefined' ? keyword : '' %>"
+                id="searchInput"
+              />
+            </div>
+
+            <!-- Button to open modal -->
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-bs-toggle="modal"
+                data-bs-target="#filterModal"
+              >
+                Filter
+              </button>
+            </div>
+
+            <!-- Modal for Filters -->
+            <div
+              class="modal fade"
+              id="filterModal"
+              tabindex="-1"
+              aria-labelledby="filterModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="filterModalLabel">
+                      Filter Products
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <form action="/products" method="GET">
+                    <div class="modal-body">
+                      <!-- Filter by Category -->
+                      <h6>Category</h6>
+                      <% categories.forEach(function (category) { %>
+                      <div class="form-check">
+                        <input class="form-check-input me-1" type="checkbox"
+                        name="category" value="<%= category._id %>"
+                        id="category_<%= category._id %>" <%=
+                        selectedCategories.includes(category._id.toString()) ?
+                        "checked" : "" %> />
+                        <label
+                          class="form-check-label"
+                          for="category_<%= category._id %>"
+                        >
+                          <%= category.name %>
+                        </label>
+                      </div>
+                      <% }); %>
+
+                      <hr />
+
+                      <!-- Filter by Material -->
+                      <h6>Material</h6>
+                      <% materials.forEach(function (material) { %>
+                      <div class="form-check">
+                        <input class="form-check-input me-1" type="checkbox"
+                        name="material" value="<%= material %>" id="material_<%=
+                        material %>" <%= selectedMaterials.includes(material) ?
+                        "checked" : "" %> />
+                        <label
+                          class="form-check-label"
+                          for="material_<%= material %>"
+                        >
+                          <%= material %>
+                        </label>
+                      </div>
+                      <% }); %>
+
+                      <hr />
+
+                      <!-- Filter by Brands -->
+                      <h6>Brand</h6>
+                      <% brands.forEach(function (brand) { %>
+                      <div class="form-check">
+                        <input class="form-check-input me-1" type="checkbox"
+                        name="brand" value="<%= brand %>" id="brand_<%= brand
+                        %>" <%= selectedBrands.includes(brand) ? "checked" : ""
+                        %> />
+                        <label
+                          class="form-check-label"
+                          for="brand_<%= brand %>"
+                        >
+                          <%= brand %>
+                        </label>
+                      </div>
+                      <% }); %>
+
+                      <hr />
+
+                      <!-- Filter by Price -->
+                      <h6>Price Range</h6>
+                      <div
+                        id="priceSlider"
+                        data-maxprice="<%= maxPrice || 10000 %>"
+                        data-minprice="<%= minPrice || 0 %>"
+                      ></div>
+                      <div class="d-flex justify-content-between mt-2">
+                        <span id="priceMinLabel"
+                          >$<%= minPrice || 10000 %></span
+                        >
+                        <span id="priceMaxLabel"
+                          >$<%= maxPrice || 10000 %></span
+                        >
+                      </div>
+                      <!-- Hidden inputs for price range -->
+                      <input type="hidden" name="minPrice" id="minPriceInput" />
+                      <input type="hidden" name="maxPrice" id="maxPriceInput" />
+                      <hr />
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button type="submit" class="btn btn-primary">
+                        Apply Filters
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- Start Product Section -->
     <div class="untree_co-section product-section before-footer-section">
@@ -71,8 +225,9 @@
 
     <!-- End Footer Section -->
 
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/tiny-slider.js"></script>
-    <script src="js/custom.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/tiny-slider.js"></script>
+    <script src="/js/custom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
   </body>
 </html>
