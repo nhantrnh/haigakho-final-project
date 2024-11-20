@@ -1,6 +1,7 @@
 // app.js
 const express = require("express");
 const path = require("path"); // Add this at the top
+const session = require("express-session");
 const mongoose = require("mongoose");
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -25,6 +26,11 @@ app.use(
 
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
+app.use(session({
+  secret: "secretKey", 
+  resave: false, 
+  saveUninitialized: true
+}));
 
 // View engine
 app.set("view engine", "ejs");

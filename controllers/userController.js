@@ -28,38 +28,34 @@ exports.getSignIn = (req, res) => {
   res.render("users/signin");
 };
 
-// Thêm phương thức signin
 exports.signin = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Tìm user theo username
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(400).render("users/signin", {
-        error: "Username does not exist",
-      });
+      return res.status(401).json({ message: "Tên đăng nhập không đúng." });
     }
 
-    // Kiểm tra mật khẩu
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).render("users/signin", {
-        error: "Incorrect password",
-      });
+      return res.status(401).json({ message: "Mật khẩu không đúng." });
     }
 
-    // Lưu thông tin user vào session
-    req.session.user = {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-    };
+    req.session.userId = user._id;
+    res.status(200).json({ message: "Đăng nhập thành công." });
 
-    res.redirect("/");
   } catch (error) {
-    res.status(400).render("users/signin", {
-      error: "Login failed",
-    });
+    console.error(error);
+    res.status(500).json({ message: "Lỗi máy chủ." });
   }
+};
+
+exports.signout = (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send("Không thể đăng xuất");
+    }
+    res.redirect("/signin");
+  });
 };
