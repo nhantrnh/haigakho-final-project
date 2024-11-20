@@ -1127,3 +1127,110 @@ p {
   background-color: rgb(0, 106, 255);
   color: white;
 }
+
+/* Add to public/css/style.css */
+.noUi-target {
+  height: 8px;
+  border: none;
+  border-radius: 4px;
+  background: #e9ecef;
+  box-shadow: none;
+  margin: 20px 10px; /* Thêm margin left/right */
+  padding: 0 10px; /* Thêm padding để handle không vượt quá */
+}
+
+.noUi-connect {
+  background: #3b5d50;
+}
+
+.noUi-handle {
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 50%;
+  background: #3b5d50;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+  right: -10px !important; /* Điều chỉnh vị trí handle */
+  top: -6px !important; /* Căn giữa handle theo chiều dọc */
+}
+
+.noUi-handle:hover {
+  transform: scale(1.1);
+}
+
+.noUi-handle:before,
+.noUi-handle:after {
+  display: none;
+}
+
+.noUi-tooltip {
+  background: #3b5d50;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+#priceMinLabel,
+#priceMaxLabel {
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Smooth transitions */
+.noUi-target,
+.noUi-handle {
+  transition: all 0.2s ease;
+}
+
+/* Active state */
+.noUi-handle.noUi-active {
+  transform: scale(1.2);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content .form-check {
+  display: flex;
+  align-items: center;
+}
+
+.modal-content .form-check-input {
+  margin-top: 0px;
+}
+
+.modal-content {
+  border-radius: 10px;
+}
+
+/* public/css/style.css */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.filter-tag {
+  background: #3b5d50;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.remove-filter {
+  color: white;
+  margin-left: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.remove-filter:hover {
+  color: #ff4444;
+}
