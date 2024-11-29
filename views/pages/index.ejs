@@ -746,13 +746,9 @@
         const closePopup = document.getElementById("close-popup");
         const shopNowButton = document.getElementById("shop-now");
 
-        const isFirstVisit = localStorage.getItem("firstVisit");
-
-        if (isFirstVisit) {
-          popup.classList.remove("hidden");
-          popup.classList.add("animate__animated", "animate__fadeIn");
-          localStorage.setItem("firstVisit", "true");
-        }
+        popup.classList.remove("hidden");
+        popup.classList.add("animate__animated", "animate__fadeIn");
+        localStorage.setItem("firstVisit", "true");
 
         closePopup.addEventListener("click", () => {
           popup.classList.remove("animate__fadeIn");
