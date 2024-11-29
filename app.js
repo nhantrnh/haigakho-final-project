@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
-const session = require("express-session"); // Thêm import
 
 const app = express();
 
@@ -26,11 +25,6 @@ app.use(
 
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
-app.use(session({
-  secret: "secretKey", 
-  resave: false, 
-  saveUninitialized: true
-}));
 
 // View engine
 app.set("view engine", "ejs");
