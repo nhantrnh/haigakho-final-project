@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 // session middleware
 app.use(
   session({
-    secret: process.env.JWT_SECRET,
+    secret: "hagako-web-secret-key",
     resave: false,
     saveUninitialized: false,
     cookie: { secure: process.env.NODE_ENV === "production" },
