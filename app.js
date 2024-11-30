@@ -1,7 +1,8 @@
 // app.js
 const express = require("express");
-const path = require("path"); // Add this at the top
+const path = require("path");
 const session = require("express-session");
+const passport = require("passport");
 const mongoose = require("mongoose");
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -23,6 +24,16 @@ app.use(
   })
 );
 
+// Initialize Passport
+require("./config/passport")(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use((req, res, next) => {
+  res.locals.user = req.user;
+  next();
+});
+
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -37,6 +48,11 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/hagako-web");
 app.use("/", require("./routes/pages"));
 app.use("/shop", require("./routes/products"));
 app.use("/", require("./routes/users"));
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Đã xảy ra lỗi!");
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

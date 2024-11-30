@@ -149,3 +149,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 500);
   });
 });
+
+// public/js/custom.js
+document.getElementById("signoutBtn")?.addEventListener("click", async (e) => {
+  e.preventDefault();
+  try {
+    const response = await fetch("/signout", {
+      method: "GET",
+    });
+    if (response.ok) {
+      window.location.href = "/";
+    }
+  } catch (error) {
+    console.error("Signout error:", error);
+  }
+});
