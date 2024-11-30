@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %> | Hagako Web</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/tiny-slider.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <%- include('../partials/header', {page: page}) %>
+    <main class="container">
+      <div class="orders-container">
+        <h1>Đơn hàng của tôi</h1>
+
+        <div class="orders-list">
+          <% if (locals.orders && orders.length > 0) { %> <%
+          orders.forEach(order => { %>
+          <div class="order-card">
+            <div class="order-header">
+              <span class="order-id">Đơn hàng #<%= order._id %></span>
+              <span class="order-date"
+                ><%= new Date(order.createdAt).toLocaleDateString('vi-VN')
+                %></span
+              >
+              <span class="order-status <%= order.status %>"
+                ><%= order.status %></span
+              >
+            </div>
+
+            <div class="order-items">
+              <!-- Order items will be rendered here -->
+            </div>
+
+            <div class="order-footer">
+              <span class="order-total">Tổng: <%= order.total %> VNĐ</span>
+              <button class="btn btn-secondary">Chi tiết</button>
+            </div>
+          </div>
+          <% }) %> <% } else { %>
+          <div class="empty-orders">
+            <p>Bạn chưa có đơn hàng nào</p>
+            <a href="/shop" class="btn btn-primary">Mua sắm ngay</a>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+    <%- include('../partials/footer') %>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/tiny-slider.js"></script>
+    <script src="js/custom.js"></script>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %> | Hagako Web</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/tiny-slider.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <%- include('../partials/header', {page: page}) %>
+    <main class="container">
+      <div class="profile-container">
+        <h1>Thông tin tài khoản</h1>
+
+        <div class="profile-card">
+          <div class="profile-header">
+            <img
+              src="/images/avatar-placeholder.png"
+              alt="Avatar"
+              class="profile-avatar"
+            />
+            <h2><%= user.username %></h2>
+          </div>
+
+          <div class="profile-details">
+            <div class="detail-item">
+              <label>Email:</label>
+              <span><%= user.email %></span>
+            </div>
+            <div class="detail-item">
+              <label>Ngày tham gia:</label>
+              <span
+                ><%= new Date(user.createdAt).toLocaleDateString('vi-VN')
+                %></span
+              >
+            </div>
+          </div>
+
+          <div class="profile-actions">
+            <a href="/settings" class="btn btn-primary">Chỉnh sửa thông tin</a>
+            <a href="/orders" class="btn btn-secondary">Xem đơn hàng</a>
+          </div>
+        </div>
+      </div>
+    </main>
+    <%- include('../partials/footer') %>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/tiny-slider.js"></script>
+    <script src="js/custom.js"></script>
+  </body>
+</html>
