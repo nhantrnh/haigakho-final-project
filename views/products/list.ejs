@@ -103,10 +103,10 @@
                       <% categories.forEach(function (category) { %>
                       <div class="form-check">
                         <input class="form-check-input me-1" type="checkbox"
-                        name="category" value="<%= category._id %>"
+                        name="category" value="<%= category.name %>"
                         id="category_<%= category._id %>" <%=
-                        selectedCategories.includes(category._id.toString()) ?
-                        "checked" : "" %> />
+                        selectedCategories.includes(category.name) ? "checked" :
+                        "" %> />
                         <label
                           class="form-check-label"
                           for="category_<%= category._id %>"
