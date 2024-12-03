@@ -49,21 +49,26 @@ exports.getProducts = async (req, res) => {
 
     // Lọc theo material
     if (material) {
-      selectedMaterials = Array.isArray(material) ? material : [material];
+      const materialArray = material ? material.split(",") : [];
+      selectedMaterials = Array.isArray(materialArray)
+        ? materialArray
+        : [materialArray];
       filter.material = { $in: selectedMaterials };
     }
 
     // Lọc theo brand
     if (brand) {
-      selectedBrands = Array.isArray(brand) ? brand : [brand];
+      const brandArray = brand ? brand.split(",") : [];
+      selectedBrands = Array.isArray(brandArray) ? brandArray : [brandArray];
       filter.brand = { $in: selectedBrands };
     }
 
     // Price range filter
     if (priceRange) {
-      selectedPriceRanges = Array.isArray(priceRange)
-        ? priceRange
-        : [priceRange];
+      const priceRangeArray = priceRange ? priceRange.split(",") : [];
+      selectedPriceRanges = Array.isArray(priceRangeArray)
+        ? priceRangeArray
+        : [priceRangeArray];
       if (selectedPriceRanges.length > 0) {
         const priceQueries = selectedPriceRanges.map((range) => {
           const [min, max] = range.split("-").map(Number);
