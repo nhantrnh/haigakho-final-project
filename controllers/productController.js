@@ -30,9 +30,21 @@ exports.getProducts = async (req, res) => {
 
     // Lọc theo category
     if (category) {
-      // Kiểm tra nếu người dùng chọn nhiều danh mục
-      selectedCategories = Array.isArray(category) ? category : [category];
-      filter.categoryId = { $in: selectedCategories };
+      const categoryNames = category ? category.split(",") : [];
+      selectedCategories = Array.isArray(categoryNames)
+        ? categoryNames
+        : [categoryNames];
+
+      // Lấy categories có name match
+      const matchedCategories = await Category.find({
+        name: { $in: selectedCategories },
+      });
+      // Filter bằng array của category IDs
+      if (matchedCategories.length > 0) {
+        filter.categoryId = {
+          $in: matchedCategories.map((cat) => cat._id),
+        };
+      }
     }
 
     // Lọc theo material
@@ -122,19 +134,43 @@ exports.getProducts = async (req, res) => {
 
     // Build query string helper
     const removeFilterFromQuery = (filterType, filterValue) => {
-      const params = new URLSearchParams(req.query);
-      if (Array.isArray(params.getAll(filterType))) {
-        // Remove specific value from array
-        const values = params
-          .getAll(filterType)
-          .filter((v) => v !== filterValue);
-        params.delete(filterType);
-        values.forEach((v) => params.append(filterType, v));
+      // Sao chép req.query để không thay đổi trực tiếp
+      const params = { ...req.query };
+
+      const updatedParams = Object.fromEntries(
+        Object.entries(params).map(([key, value]) => [
+          key,
+          value.includes(",") ? value.split(",") : value, // Nếu có dấu phẩy, tách thành mảng
+        ])
+      );
+      console.log("Original params: ", updatedParams);
+
+      // Lấy mảng giá trị hiện tại của filterType
+      const currentValues = Array.isArray(updatedParams[filterType])
+        ? updatedParams[filterType]
+        : updatedParams[filterType]
+        ? [updatedParams[filterType]]
+        : []; // Nếu không tồn tại, trả về mảng rỗng
+      console.log("currentValues: ", currentValues);
+
+      // Xóa giá trị cần loại bỏ
+      const updatedValues = currentValues.filter((v) => v !== filterValue);
+      console.log("updatedValues: ", updatedValues);
+
+      // Cập nhật lại params
+      if (updatedValues.length > 0) {
+        updatedParams[filterType] = updatedValues;
       } else {
-        // Remove single value
-        params.delete(filterType);
+        delete updatedParams[filterType]; // Nếu không còn giá trị, xóa filterType
       }
-      return params.toString();
+
+      console.log("Updated params: ", updatedParams);
+
+      // Build lại query string
+      const queryString = new URLSearchParams(updatedParams);
+      console.log("Query string: ", queryString.toString());
+
+      return queryString;
     };
 
     res.render("products/list", {
