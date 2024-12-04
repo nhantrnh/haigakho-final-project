@@ -33,7 +33,12 @@ app.use((req, res, next) => {
   res.locals.user = req.user;
   next();
 });
-
+app.use((req, res, next) => {
+  if (!req.session.cart) {
+      req.session.cart = [];
+  }
+  next();
+});
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -48,6 +53,7 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/hagako-web");
 app.use("/", require("./routes/pages"));
 app.use("/shop", require("./routes/products"));
 app.use("/", require("./routes/users"));
+app.use("/", require("./routes/routes"));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

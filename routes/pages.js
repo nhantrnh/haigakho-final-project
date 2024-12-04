@@ -10,7 +10,10 @@ router.get("/blog", (req, res) => {
 });
 
 router.get("/cart", (req, res) => {
-  res.render("pages/cart");
+  let cart = req.session.cart;
+  console.log("cart", cart);
+
+  res.render("pages/cart", { cart: cart });
 });
 
 router.get("/checkout", (req, res) => {
