@@ -4,6 +4,10 @@ const Category = require("../models/Category");
 
 exports.getProducts = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 8; // Items per page
+    const skip = (page - 1) * limit;
+
     const { keyword, category, material, brand, priceRange } = req.query; // Lấy danh sách category từ query params
     let filter = {};
     let selectedCategories = [];
@@ -79,7 +83,7 @@ exports.getProducts = async (req, res) => {
     }
 
     // Fetch sản phẩm từ database
-    const products = await Product.find(filter).populate("categoryId", "name");
+    //const products = await Product.find(filter).populate("categoryId", "name");
 
     // Lấy danh sách tất cả các category
     const categories = await Category.find();
@@ -148,7 +152,6 @@ exports.getProducts = async (req, res) => {
           value.includes(",") ? value.split(",") : value, // Nếu có dấu phẩy, tách thành mảng
         ])
       );
-      console.log("Original params: ", updatedParams);
 
       // Lấy mảng giá trị hiện tại của filterType
       const currentValues = Array.isArray(updatedParams[filterType])
@@ -156,11 +159,9 @@ exports.getProducts = async (req, res) => {
         : updatedParams[filterType]
         ? [updatedParams[filterType]]
         : []; // Nếu không tồn tại, trả về mảng rỗng
-      console.log("currentValues: ", currentValues);
 
       // Xóa giá trị cần loại bỏ
       const updatedValues = currentValues.filter((v) => v !== filterValue);
-      console.log("updatedValues: ", updatedValues);
 
       // Cập nhật lại params
       if (updatedValues.length > 0) {
@@ -169,14 +170,21 @@ exports.getProducts = async (req, res) => {
         delete updatedParams[filterType]; // Nếu không còn giá trị, xóa filterType
       }
 
-      console.log("Updated params: ", updatedParams);
-
       // Build lại query string
       const queryString = new URLSearchParams(updatedParams);
-      console.log("Query string: ", queryString.toString());
 
       return queryString;
     };
+
+    // Get total products count for pagination
+    const totalProducts = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    // Modify product query to include pagination
+    const products = await Product.find(filter)
+      .populate("categoryId", "name")
+      .skip(skip)
+      .limit(limit);
 
     res.render("products/list", {
       products,
@@ -191,6 +199,15 @@ exports.getProducts = async (req, res) => {
       selectedPriceRanges, // Truyền danh sách các price range đã chọn
       activeFilters, // Truyền danh sách các filter đã chọn
       removeFilterFromQuery, // Truyền hàm xử lý xóa filter
+      currentQuery: req.query, // Truyền query params hiện tại
+      pagination: {
+        page,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+      },
     });
   } catch (error) {
     console.error("Error:", error);
