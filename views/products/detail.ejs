@@ -11,6 +11,7 @@
     <link rel="shortcut icon" href="/favicon.png" />
     <meta name="description" content="" />
     <meta name="keywords" content="bootstrap, bootstrap4" />
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
     <!-- Fix đường dẫn CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet" />
@@ -20,6 +21,7 @@
     />
     <link href="/css/tiny-slider.css" rel="stylesheet" />
     <link href="/css/style.css" rel="stylesheet" />
+
     <title><%= product.name %> | HAGAKO</title>
   </head>
   <body>
@@ -32,7 +34,7 @@
       <div class="container-fluid">
         <div class="container">
           <div class="row justify-content-center">
-            <div class="col-3 productCart product">
+            <div class="col-3 productCart product" id="<%= product._id %>">
               <div class="rowCustom card align-items-center">
                 <div class="column text-center">
                   <img
@@ -53,16 +55,20 @@
                   </p>
                   <p>
                     Category:
-                    <span style="font-weight: bold"
+                    <span class="product-categoryName" style="font-weight: bold"
                       ><%= product.categoryId.name %></span
                     >
                   </p>
                   <p>
                     Status:
-                    <span style="font-weight: bold"
+                    <span class="product-status" style="font-weight: bold"
                       ><%= product.stock > 0 ? 'Available' : 'Out of Stock'
                       %></span
                     >
+                  </p>
+                  <p>
+                    Amount:
+                    <span class="product-amount" style="font-weight: bold"><%= product.stock %></span>
                   </p>
                   <h2
                     class="product-price"
@@ -143,5 +149,49 @@
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/tiny-slider.js"></script>
     <script src="/js/custom.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Gắn sự kiện input cho ô nhập số lượng
+        $('.product-count').on('input', function() {
+          var inputElement = $(this);
+          var stock = parseInt(inputElement.attr('max')); // Lấy số lượng kho từ thuộc tính max
+          var currentValue = parseInt(inputElement.val()); // Lấy giá trị hiện tại trong input
+      
+          // Kiểm tra nếu giá trị nhập lớn hơn stock
+          if (currentValue > stock) {
+            // Nếu lớn hơn stock, đặt lại giá trị của input thành stock
+            inputElement.val(stock);
+            alert('Số lượng không thể lớn hơn số lượng trong kho!');
+          }
+        });
+      
+        // Gắn sự kiện cho nút cộng
+        // Gắn sự kiện cho nút cộng
+        $('.plus-btnn').off('click').on('click', function() {
+          var inputElement = $(this).siblings('.product-count'); // Lấy input liền kề
+          var stock = parseInt(inputElement.attr('max')); // Lấy số lượng kho từ thuộc tính max
+          var currentValue = parseInt(inputElement.val());
+          
+          // Tăng số lượng nếu không vượt quá stock
+          if (currentValue < stock) {
+            inputElement.val(currentValue + 1);
+          } else {
+            alert('Số lượng không thể lớn hơn số lượng trong kho!');
+          }
+        });
+
+      
+        // Gắn sự kiện cho nút trừ
+        $('.minus-btnn').on('click', function() {
+          var inputElement = $(this).siblings('.product-count'); // Lấy input liền kề
+          var currentValue = parseInt(inputElement.val());
+      
+          // Giảm số lượng nếu không nhỏ hơn 1
+          if (currentValue > 1) {
+            inputElement.val(currentValue - 1);
+          }
+        });
+      });      
+    </script>
   </body>
 </html>

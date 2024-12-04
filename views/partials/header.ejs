@@ -94,12 +94,29 @@
         </li>
         <% } %>
 
-        <li class="nav-item <%= page === 'cart' ? 'active' : '' %>">
-          <a class="nav-link" href="/cart">
-            <img src="/images/cart.svg" alt="" />
-          </a>
-        </li>
+        <li class="cart cart-icon-container nav-item <%= page === 'cart' ? 'active' : '' %>">
+          <a class="nav-link" href="javascript:void(0)" onclick="toggleCartSidebar()">
+            <img src="/images/cart.svg" alt="Cart" />
+            <span id="cart-count">0</span>
+          </a>         
+        </li>     
       </ul>
     </div>
   </div>
 </nav>
+<div id="cartSidebar" class="cart-sidebar">
+  <div class="cart-header">
+    <h4>Giỏ hàng</h4>
+    <button class="close-btn" onclick="toggleCartSidebar()">X</button>
+  </div>
+  <ul id="cart-items">
+    <!-- Các sản phẩm trong giỏ hàng sẽ được hiển thị ở đây -->
+  </ul>
+  <div class="cart-summary">
+    <p>Total items: <span id="cart-countt">0</span></p>
+    <p>Total price: $<span id="cart-total">0.00</span></p>
+  </div>
+  <div class="cart-footer">
+    <a href="/cart" class="btn btn-primary">Thanh toán</a>
+  </div>
+</div>

@@ -1347,3 +1347,164 @@ p {
   color: #6c757d;
   pointer-events: none;
 }
+/* Sidebar */
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: -300px; /* Bắt đầu ngoài màn hình */
+  width: 300px;
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-sidebar.open {
+  right: 0; /* Hiển thị trong màn hình */
+}
+
+.cart-header {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+}
+
+.cart-header h4 {
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.cart-body {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+#cart-items {
+  flex: 1; /* Cho phép phần này chiếm không gian còn lại */
+  padding: 10px;
+  overflow-y: auto; /* Hiển thị thanh cuộn khi nội dung quá dài */
+  max-height: 70vh; /* Giới hạn chiều cao của phần sản phẩm, có thể điều chỉnh */
+}
+
+/* Kiểu dáng cho sản phẩm trong giỏ hàng */
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Hình ảnh sản phẩm */
+.cart-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+/* Thông tin chi tiết sản phẩm */
+.cart-item-details {
+  flex: 1;
+  padding-left: 5px;
+  font-size: 12px;
+}
+
+/* Tên sản phẩm */
+.cart-item-details p:first-child {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+/* Nút giảm, tăng số lượng */
+.cart-item-details .decrease-qty, .cart-item-details .increase-qty {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cart-item-details .decrease-qty:hover, .cart-item-details .increase-qty:hover {
+  background-color: #ddd;
+}
+
+/* Giá sản phẩm */
+.cart-item-details p:last-child {
+  color: #333;
+  font-size: 10px;
+  margin-bottom: 10px;
+}
+
+/* Nút thùng rác */
+.remove-item {
+  display: flex;
+  align-items: center;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+/* Khi hover vào nút thùng rác */
+.remove-item:hover {
+  background-color: #c0392b;
+}
+
+/* Biểu tượng thùng rác */
+.remove-item i {
+  margin-right: 5px;
+}
+
+.cart-footer {
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
+}
+
+.btn-primary {
+  width: 100%;
+}
+.cart-icon-container {
+  position: relative; /* Đặt container để sử dụng vị trí tương đối */
+  display: inline-block;
+  width: 40px; /* Đảm bảo kích thước phù hợp với icon */
+  height: 40px;
+}
+
+#cart-count {
+  position: absolute; /* Đặt số lượng ở góc */
+  top: -5px; /* Điều chỉnh vị trí dọc */
+  right: -5px; /* Điều chỉnh vị trí ngang */
+  background-color: red; /* Màu nền nổi bật */
+  color: white; /* Màu chữ */
+  font-size: 14px; /* Kích thước chữ */
+  font-weight: bold;
+  width: 20px; /* Kích thước khung tròn */
+  height: 20px;
+  line-height: 20px; /* Căn giữa chữ trong khung */
+  border-radius: 50%; /* Bo tròn khung */
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+  z-index: 10; /* Đảm bảo nó nổi trên icon */
+}
