@@ -36,4 +36,8 @@ router.get("/services", (req, res) => {
   res.render("pages/services");
 });
 
+router.get("/admin", (req, res) => {
+  res.render("pages/admin");
+});
+
 module.exports = router;

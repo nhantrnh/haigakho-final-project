@@ -141,41 +141,6 @@ exports.getProducts = async (req, res) => {
       ];
     }
 
-    // Build query string helper
-    const removeFilterFromQuery = (filterType, filterValue) => {
-      // Sao chép req.query để không thay đổi trực tiếp
-      const params = { ...req.query };
-
-      const updatedParams = Object.fromEntries(
-        Object.entries(params).map(([key, value]) => [
-          key,
-          value.includes(",") ? value.split(",") : value, // Nếu có dấu phẩy, tách thành mảng
-        ])
-      );
-
-      // Lấy mảng giá trị hiện tại của filterType
-      const currentValues = Array.isArray(updatedParams[filterType])
-        ? updatedParams[filterType]
-        : updatedParams[filterType]
-        ? [updatedParams[filterType]]
-        : []; // Nếu không tồn tại, trả về mảng rỗng
-
-      // Xóa giá trị cần loại bỏ
-      const updatedValues = currentValues.filter((v) => v !== filterValue);
-
-      // Cập nhật lại params
-      if (updatedValues.length > 0) {
-        updatedParams[filterType] = updatedValues;
-      } else {
-        delete updatedParams[filterType]; // Nếu không còn giá trị, xóa filterType
-      }
-
-      // Build lại query string
-      const queryString = new URLSearchParams(updatedParams);
-
-      return queryString;
-    };
-
     // Get total products count for pagination
     const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / limit);
@@ -185,6 +150,25 @@ exports.getProducts = async (req, res) => {
       .populate("categoryId", "name")
       .skip(skip)
       .limit(limit);
+
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.json({
+        products,
+        categories,
+        materials,
+        brands,
+        priceRanges,
+        activeFilters,
+        pagination: {
+          page,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
+          nextPage: page + 1,
+          prevPage: page - 1,
+        },
+      });
+    }
 
     res.render("products/list", {
       products,
@@ -209,6 +193,110 @@ exports.getProducts = async (req, res) => {
         prevPage: page - 1,
       },
     });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Server error");
+  }
+};
+
+
+exports.paging = async (req, res) => {
+  try {
+    const page = parseInt(req.body.page) || 1;
+    const limit = 8; // Items per page
+    const skip = (page - 1) * limit;
+
+    const filter = req.body.filter || {}; // Use filter sent in the body
+
+    // Get total products count for pagination
+    const totalProducts = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    // Get the products with pagination
+    const products = await Product.find(filter)
+      .skip(skip)
+      .limit(limit);
+
+    res.json({
+      products,
+      pagination: {
+        page,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+      },
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Server error");
+  }
+};
+exports.filter = async (req, res) => {
+  try {
+    const { keyword, category, material, brand, priceRange } = req.body; // Take the filters from body
+    let filter = {};
+
+    // Search filter
+    if (keyword) {
+      filter.$or = [
+        { name: { $regex: keyword, $options: "i" } },
+        { description: { $regex: keyword, $options: "i" } },
+      ];
+    }
+
+    // Filter by category
+    if (category) {
+      const categoryNames = category.split(",");
+      const matchedCategories = await Category.find({
+        name: { $in: categoryNames },
+      });
+      if (matchedCategories.length > 0) {
+        filter.categoryId = {
+          $in: matchedCategories.map((cat) => cat._id),
+        };
+      }
+    }
+
+    // Filter by material
+    if (material) {
+      const materials = material.split(",");
+      filter.material = { $in: materials };
+    }
+
+    // Filter by brand
+    if (brand) {
+      const brands = brand.split(",");
+      filter.brand = { $in: brands };
+    }
+
+    // Filter by price range
+    if (priceRange) {
+      const priceRangeArray = priceRange.split(",");
+      const priceQueries = priceRangeArray.map((range) => {
+        const [min, max] = range.split("-").map(Number);
+        return { price: { $gte: min, $lte: max } };
+      });
+      filter.$or = priceQueries;
+    }
+
+    res.json({ filter });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Server error");
+  }
+};
+exports.sort = async (req, res) => {
+  try {
+    const { sortBy, sortOrder } = req.body; // Get sorting options from body
+    const sortOptions = {};
+
+    if (sortBy) {
+      sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
+    }
+
+    res.json({ sortOptions });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Server error");
