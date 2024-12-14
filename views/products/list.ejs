@@ -50,178 +50,182 @@
 
     <div class="search-section py-5">
       <div class="container">
-        <form id="filterForm" action="/shop" method="GET">
-          <div class="row">
-            <!-- Search Bar -->
-            <div class="col-md-10">
-              <input
-                type="text"
-                name="keyword"
-                class="form-control"
-                placeholder="Search products by name, description..."
-                value="<%= typeof keyword !== 'undefined' ? keyword : '' %>"
-                id="searchInput"
-              />
-            </div>
+        <div class="row">
+          <!-- Search Bar -->
+          <div class="col-md-10">
+            <input
+              type="text"
+              name="keyword"
+              class="form-control"
+              placeholder="Search products by name, description..."
+              value="<%= typeof keyword !== 'undefined' ? keyword : '' %>"
+              id="searchInput"
+            />
+          </div>
 
-            <!-- Button to open modal -->
-            <div class="col-md-2">
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#filterModal"
-              >
-                <i class="fas fa-filter me-2"></i>Filter
-              </button>
-            </div>
-
-            <!-- Modal for Filters -->
-            <div
-              class="modal fade"
-              id="filterModal"
-              tabindex="-1"
-              aria-labelledby="filterModalLabel"
-              aria-hidden="true"
+          <!-- Button to open modal -->
+          <div class="col-md-2">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#filterModal"
             >
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="filterModalLabel">
-                      Filter Products
-                    </h5>
+              <i class="fas fa-filter me-2"></i>Filter
+            </button>
+          </div>
+
+          <!-- Modal for Filters -->
+          <div
+            class="modal fade"
+            id="filterModal"
+            tabindex="-1"
+            aria-labelledby="filterModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="filterModalLabel">
+                    Filter Products
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <form id="filterForm">
+                  <!-- Add this debugging section temporarily -->
+                  <div class="modal-body">
+                    <!-- Filter by Category -->
+                    <h6>Category</h6>
+                    <% categories.forEach(function (category) { %>
+                    <div class="form-check">
+                      <input class="form-check-input me-1" type="checkbox"
+                      name="category" value="<%= category.name %>"
+                      id="category_<%= category._id %>" <%=
+                      selectedCategories.includes(category.name) ? "checked" :
+                      "" %> />
+                      <label
+                        class="form-check-label"
+                        for="category_<%= category._id %>"
+                      >
+                        <%= category.name %>
+                      </label>
+                    </div>
+                    <% }); %>
+
+                    <hr />
+
+                    <!-- Filter by Material -->
+                    <h6>Material</h6>
+                    <% materials.forEach(function (material) { %>
+                    <div class="form-check">
+                      <input class="form-check-input me-1" type="checkbox"
+                      name="material" value="<%= material %>" id="material_<%=
+                      material %>" <%= selectedMaterials.includes(material) ?
+                      "checked" : "" %> />
+                      <label
+                        class="form-check-label"
+                        for="material_<%= material %>"
+                      >
+                        <%= material %>
+                      </label>
+                    </div>
+                    <% }); %>
+
+                    <hr />
+
+                    <!-- Filter by Brands -->
+                    <h6>Brand</h6>
+                    <% brands.forEach(function (brand) { %>
+                    <div class="form-check">
+                      <input class="form-check-input me-1" type="checkbox"
+                      name="brand" value="<%= brand %>" id="brand_<%= brand %>"
+                      <%= selectedBrands.includes(brand) ? "checked" : "" %> />
+                      <label class="form-check-label" for="brand_<%= brand %>">
+                        <%= brand %>
+                      </label>
+                    </div>
+                    <% }); %>
+
+                    <hr />
+
+                    <!-- Filter by Price -->
+                    <h6>Price Range</h6>
+                    <% priceRanges.forEach(function(range) { %>
+                    <div class="form-check">
+                      <input class="form-check-input me-1" type="checkbox"
+                      name="priceRange" value="<%= range.min %>-<%= range.max
+                      %>" id="price_<%= range.min %>_<%= range.max %>" <%=
+                      selectedPriceRanges.includes(range.min + '-' + range.max)
+                      ? 'checked' : '' %> />
+                      <label
+                        class="form-check-label"
+                        for="price_<%= range.min %>_<%= range.max %>"
+                      >
+                        <%= range.label %>
+                      </label>
+                    </div>
+                    <% }); %>
+                  </div>
+                  <div class="modal-footer">
                     <button
                       type="button"
-                      class="btn-close"
+                      class="btn btn-secondary"
                       data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                    >
+                      Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                      Apply Filters
+                    </button>
                   </div>
-                  <form>
-                    <div class="modal-body">
-                      <!-- Filter by Category -->
-                      <h6>Category</h6>
-                      <% categories.forEach(function (category) { %>
-                      <div class="form-check">
-                        <input class="form-check-input me-1" type="checkbox"
-                        name="category" value="<%= category.name %>"
-                        id="category_<%= category._id %>" <%=
-                        selectedCategories.includes(category.name) ? "checked" :
-                        "" %> />
-                        <label
-                          class="form-check-label"
-                          for="category_<%= category._id %>"
-                        >
-                          <%= category.name %>
-                        </label>
-                      </div>
-                      <% }); %>
-
-                      <hr />
-
-                      <!-- Filter by Material -->
-                      <h6>Material</h6>
-                      <% materials.forEach(function (material) { %>
-                      <div class="form-check">
-                        <input class="form-check-input me-1" type="checkbox"
-                        name="material" value="<%= material %>" id="material_<%=
-                        material %>" <%= selectedMaterials.includes(material) ?
-                        "checked" : "" %> />
-                        <label
-                          class="form-check-label"
-                          for="material_<%= material %>"
-                        >
-                          <%= material %>
-                        </label>
-                      </div>
-                      <% }); %>
-
-                      <hr />
-
-                      <!-- Filter by Brands -->
-                      <h6>Brand</h6>
-                      <% brands.forEach(function (brand) { %>
-                      <div class="form-check">
-                        <input class="form-check-input me-1" type="checkbox"
-                        name="brand" value="<%= brand %>" id="brand_<%= brand
-                        %>" <%= selectedBrands.includes(brand) ? "checked" : ""
-                        %> />
-                        <label
-                          class="form-check-label"
-                          for="brand_<%= brand %>"
-                        >
-                          <%= brand %>
-                        </label>
-                      </div>
-                      <% }); %>
-
-                      <hr />
-
-                      <!-- Filter by Price -->
-                      <h6>Price Range</h6>
-                      <% priceRanges.forEach(function(range) { %>
-                      <div class="form-check">
-                        <input class="form-check-input me-1" type="checkbox"
-                        name="priceRange" value="<%= range.min %>-<%= range.max
-                        %>" id="price_<%= range.min %>_<%= range.max %>" <%=
-                        selectedPriceRanges.includes(range.min + '-' +
-                        range.max) ? 'checked' : '' %> />
-                        <label
-                          class="form-check-label"
-                          for="price_<%= range.min %>_<%= range.max %>"
-                        >
-                          <%= range.label %>
-                        </label>
-                      </div>
-                      <% }); %>
-                    </div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                      <button type="submit" class="btn btn-primary">
-                        Apply Filters
-                      </button>
-                    </div>
-                  </form>
-                </div>
+                </form>
               </div>
             </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
 
-    <!-- In list.ejs -->
-    <% if (activeFilters && activeFilters.length > 0) { %>
-    <div class="container mt-3">
-      <div class="active-filters">
-        <% activeFilters.forEach(function(filter) { %>
-        <span class="filter-tag">
-          <%= filter.label %>
-          <a
-            href="?<%= removeFilterFromQuery(filter.type, filter.value) %>"
-            class="remove-filter"
-            >&times;</a
+    <!-- Filter Tags -->
+    <div id="filter-tag-container">
+      <% if (activeFilters && activeFilters.length > 0) { %>
+      <div class="container mt-3">
+        <div class="active-filters">
+          <% activeFilters.forEach(function(filter) { %>
+          <span class="filter-tag">
+            <%= filter.label %>
+            <a
+              href="#"
+              class="remove-filter"
+              data-key="<%= filter.type %>"
+              data-value="<%= filter.value %>"
+              >&times;</a
+            >
+          </span>
+          <% }); %> <% if (activeFilters.length > 1) { %>
+          <a class="remove-all-filter btn btn-sm btn-outline-danger ms-2"
+            >Clear All</a
           >
-        </span>
-        <% }); %> <% if (activeFilters.length > 1) { %>
-        <a href="/shop" class="btn btn-sm btn-outline-danger ms-2">Clear All</a>
-        <% } %>
+          <% } %>
+        </div>
       </div>
+      <% } %>
     </div>
-    <% } %>
 
     <!-- Start Product Section -->
     <div class="untree_co-section product-section before-footer-section">
       <div class="container">
-        <div class="row">
+        <div id="product-list" class="row">
           <% products.forEach(function(product) { %>
-          <div class="col-12 col-md-4 col-lg-3 mb-5">
+          <div
+            class="col-12 col-md-4 col-lg-3 mb-5"
+            data-product-id="<%= product._id %>"
+          >
             <a class="product-item" href="/shop/<%= product._id %>">
               <img
                 src="<%= product.imageUrl %>"

@@ -1,134 +1,233 @@
-document
-  .querySelector("#filterForm")
-  .addEventListener("submit", function (event) {
-    const form = event.target;
-    const urlParams = new URLSearchParams(new FormData(form));
+$(document).ready(function () {
+  try {
+    let searchTimeout;
 
-    // Chuyển đổi các tham số có giá trị nhiều thành dấu phẩy
-    const filterFields = ["category", "material", "brand", "priceRange"];
-    
-    filterFields.forEach(field => {
-      const values = urlParams.getAll(field);
-      if (values.length > 0) {
-        urlParams.delete(field); // Xóa các tham số cũ
-        urlParams.append(field, values.join(",")); // Thêm dạng dấu phẩy
+    let urlParams = new URLSearchParams();
+
+    $("#searchInput").on("input", function () {
+      clearTimeout(searchTimeout);
+
+      // Sửa keyword trong urlParams
+      urlParams.set("keyword", $(this).val().trim());
+      if (urlParams.get("keyword").length === 0) {
+        urlParams.delete("keyword");
       }
+
+      searchTimeout = setTimeout(function () {
+        $.ajax({
+          url: "/shop",
+          type: "GET",
+          data: urlParams.toString(),
+          success: function (response) {
+            if (response.success) {
+              // Cập nhật danh sách sản phẩm
+              $("#product-list").html(response.productListHTML);
+              $("#filter-tag-container").html($(response.filterTagHTML));
+              // Cập nhật phân trang
+              $(".pagination").html(response.paginationHTML);
+
+              // Cập nhật URL (nếu cần)
+              history.pushState(null, "", `/shop?${urlParams.toString()}`);
+            }
+          },
+          error: function (error) {
+            console.error("Lỗi tìm kiếm:", error);
+          },
+        });
+      }, 500);
     });
 
-    // Ngăn form gửi dữ liệu theo cách mặc định
-    event.preventDefault();
+    // Filter Modal Form Submission
+    $("#filterForm").on("submit", function (event) {
+      event.preventDefault(); // Ngăn chặn submit form thông thường
+      const formData = new FormData(this);
+      const keyword = $("#searchInput").val().trim();
+      if (keyword.length > 0) {
+        formData.set("keyword", keyword); // Đảm bảo keyword cũng được gửi đi
+      }
+      urlParams = new URLSearchParams(formData);
 
-    // Cập nhật URL với query string
-    window.location.href = `/shop?${urlParams.toString()}`;
-  });
+      // Chuyển đổi các tham số có giá trị nhiều thành dấu phẩy
+      const categoryValues = urlParams.getAll("category");
+      if (categoryValues.length > 0) {
+        urlParams.delete("category"); // Xóa các tham số category cũ
+        urlParams.append("category", categoryValues.join(",")); // Thêm dạng dấu phẩy
+      }
 
-// Hàm AJAX để áp dụng bộ lọc
-function applyFilter(filters) {
-  $.ajax({
-    type: 'POST',
-    url: '/filter',
-    data: JSON.stringify(filters),
-    contentType: 'application/json',
-    success: function(response) {
-      console.log('Filtered data:', response);
-      // Cập nhật giao diện với dữ liệu đã lọc
-      renderProducts(response.products);
-    },
-    error: function(error) {
-      console.error('Error:', error);
-    }
-  });
-}
+      // Tương tự xử lý cho các filter khác như "material", "brand", etc.
+      const materialValues = urlParams.getAll("material");
+      if (materialValues.length > 0) {
+        urlParams.delete("material"); // Xóa các tham số material cũ
+        urlParams.append("material", materialValues.join(",")); // Thêm dạng dấu phẩy
+      }
 
-// Hàm render sản phẩm
-function renderProducts(products) {
-  const productContainer = document.getElementById('productContainer');
-  productContainer.innerHTML = ''; // Xóa các sản phẩm cũ
+      const brandValues = urlParams.getAll("brand");
+      if (brandValues.length > 0) {
+        urlParams.delete("brand"); // Xóa các tham số brand cũ
+        urlParams.append("brand", brandValues.join(",")); // Thêm dạng dấu phẩy
+      }
 
-  products.forEach(product => {
-    const productElement = document.createElement('div');
-    productElement.classList.add('product');
-    productElement.innerHTML = `
-      <h3>${product.name}</h3>
-      <p>${product.description}</p>
-      <span>${product.price}</span>
-    `;
-    productContainer.appendChild(productElement);
-  });
-}
+      const priceRangeValues = urlParams.getAll("priceRange");
+      if (priceRangeValues.length > 0) {
+        urlParams.delete("priceRange"); // Xóa các tham số priceRange cũ
+        urlParams.append("priceRange", priceRangeValues.join(",")); // Thêm dạng dấu phẩy
+      }
 
-// Hàm AJAX để phân trang sản phẩm
-function getProductsPage(page, filter) {
-  $.ajax({
-    type: 'POST',
-    url: '/paging',
-    data: JSON.stringify({ page, filter }),
-    contentType: 'application/json',
-    success: function(response) {
-      console.log('Paged data:', response);
-      // Cập nhật giao diện với dữ liệu đã phân trang
-      renderProducts(response.products);
-      updatePagination(response.pagination);
-    },
-    error: function(error) {
-      console.error('Error:', error);
-    }
-  });
-}
+      $.ajax({
+        url: "/shop",
+        type: "GET",
+        data: urlParams.toString(),
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        success: function (response) {
+          $("#product-list").html($(response.productListHTML));
+          $("#filter-tag-container").html($(response.filterTagHTML));
+          console.log(response);
+          $(".pagination").html($(response.paginationHTML));
+          history.pushState(null, "", `/shop?${urlParams.toString()}`);
+        },
+        error: function (error) {
+          console.error("Lỗi khi lọc sản phẩm:", error);
+        },
+      });
+    });
 
-// Hàm cập nhật phân trang
-function updatePagination(pagination) {
-  const paginationContainer = document.getElementById('paginationContainer');
-  paginationContainer.innerHTML = ''; // Xóa phân trang cũ
+    // Pagination Links
+    $(document).on("click", ".pagination .page-link", function (event) {
+      event.preventDefault();
 
-  // Render các nút phân trang (Next/Prev)
-  if (pagination.hasPrevPage) {
-    paginationContainer.innerHTML += `<button onclick="getProductsPage(${pagination.prevPage}, filters)">Previous</button>`;
+      const $link = $(this);
+      if ($link.parent().hasClass("disabled")) return;
+
+      const href = $link.attr("href");
+      if (!href) return;
+
+      const params = href;
+
+      $.ajax({
+        url: href,
+        type: "GET",
+        success: function (response) {
+          if (response.success) {
+            // Cập nhật danh sách sản phẩm
+            $("#product-list").html(response.productListHTML);
+
+            // Cập nhật phân trang
+            $(".pagination").html(response.paginationHTML);
+
+            // Cập nhật URL (nếu cần)
+            history.pushState(null, "", `/shop${params.toString()}`);
+          }
+        },
+        error: function (error) {
+          console.error("Lỗi chuyển trang:", error);
+        },
+      });
+    });
+
+    // Filter Tags Links
+    $(document).on("click", ".remove-filter", function (event) {
+      event.preventDefault();
+
+      const $link = $(this);
+      if ($link.parent().hasClass("disabled")) return;
+
+      const href = $link.attr("href");
+      if (!href) return;
+
+      const key = $link.data("key"); // e.g., "category", "material"
+      const value = $link.data("value"); // e.g., "Table", "Fabric"
+
+      removeValueFromURLParams(urlParams, key, value);
+
+      $.ajax({
+        url: "/shop",
+        type: "GET",
+        data: urlParams.toString(),
+        success: function (response) {
+          if (response.success) {
+            // Cập nhật danh sách sản phẩm
+            $("#product-list").html(response.productListHTML);
+            $("#filter-tag-container").html($(response.filterTagHTML));
+            // Cập nhật phân trang
+            $(".pagination").html(response.paginationHTML);
+
+            // Cập nhật URL (nếu cần)
+            history.pushState(null, "", `/shop?${urlParams.toString()}`);
+          }
+        },
+        error: function (error) {
+          console.error("Lỗi xóa filter tag:", error);
+        },
+      });
+    });
+
+    // Filter Tags Remove all
+    $(document).on("click", ".remove-all-filter", function (event) {
+      event.preventDefault();
+
+      urlParams = new URLSearchParams();
+      if ($("#searchInput").val().trim().length > 0) {
+        urlParams.append("keyword", $("#searchInput").val().trim());
+      }
+
+      // Reset form
+      $("#filterForm")[0].reset();
+
+      $.ajax({
+        url: "/shop",
+        type: "GET",
+        data: urlParams.toString(),
+        success: function (response) {
+          if (response.success) {
+            // Cập nhật danh sách sản phẩm
+            $("#product-list").html(response.productListHTML);
+            $("#filter-tag-container").html($(response.filterTagHTML));
+            // Cập nhật phân trang
+            $(".pagination").html(response.paginationHTML);
+            // Cập nhật URL (nếu cần)
+            history.pushState(null, "", `/shop?${urlParams.toString()}`);
+          }
+        },
+        error: function (error) {
+          console.error("Lỗi xóa filter tag:", error);
+        },
+      });
+    });
+  } catch (error) {
+    console.error("Error in shop.js:", error);
   }
-  if (pagination.hasNextPage) {
-    paginationContainer.innerHTML += `<button onclick="getProductsPage(${pagination.nextPage}, filters)">Next</button>`;
+});
+
+// Hàm xóa giá trị từ URLSearchParams
+
+function removeValueFromURLParams(urlParams, key, value) {
+  if (urlParams.has(key)) {
+    // Lấy giá trị hiện tại của key (e.g., "Table,Sofa")
+
+    let values = urlParams.get(key);
+
+    let updatedValues = [];
+    if (values.indexOf(",") > -1) {
+      // Nếu có nhiều giá trị, tách thành mảng
+      values = values.split(",");
+      // Lọc bỏ giá trị cần xóa
+      updatedValues = values.filter((v) => v !== value);
+    }
+
+    // Cập nhật lại `urlParams`
+    urlParams.delete(key); // Xóa toàn bộ key cũ
+    if (updatedValues.length > 0) {
+      urlParams.set(key, updatedValues.join(",")); // Gán lại giá trị đã lọc
+    }
+
+    uncheckFilterForm(key, value);
   }
 }
 
-// Hàm AJAX để sắp xếp sản phẩm
-function sortProducts(sortBy, sortOrder) {
-  $.ajax({
-    type: 'POST',
-    url: '/sort',
-    data: JSON.stringify({ sortBy, sortOrder }),
-    contentType: 'application/json',
-    success: function(response) {
-      console.log('Sorted data:', response);
-      // Cập nhật giao diện với dữ liệu đã sắp xếp
-      renderProducts(response.products);
-    },
-    error: function(error) {
-      console.error('Error:', error);
-    }
-  });
+// Hàm xóa tích trong form theo key, value
+function uncheckFilterForm(key, value) {
+  const $checkbox = $(`#filterForm input[name="${key}"][value="${value}"]`);
+  $checkbox.prop("checked", false);
 }
-
-// Xử lý khi người dùng thay đổi bộ lọc
-document.querySelector("#filterForm").addEventListener("submit", function(event) {
-  const filters = {
-    category: document.querySelector("#categoryInput").value,
-    material: document.querySelector("#materialInput").value,
-    brand: document.querySelector("#brandInput").value,
-    priceRange: document.querySelector("#priceRangeInput").value,
-  };
-
-  applyFilter(filters);
-});
-
-// Xử lý khi người dùng thay đổi trang phân trang
-document.querySelector("#paginationNext").addEventListener("click", function() {
-  const page = currentPage + 1;
-  getProductsPage(page, filters);
-});
-
-// Xử lý khi người dùng thay đổi sắp xếp
-document.querySelector("#sortOptions").addEventListener("change", function(event) {
-  const sortBy = event.target.value;
-  const sortOrder = "asc"; // Hoặc "desc" tùy vào UI
-  sortProducts(sortBy, sortOrder);
-});

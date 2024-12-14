@@ -20,7 +20,12 @@ app.use(
     secret: "hagako-web-secret-key",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === "production" },
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+    proxy: true,
   })
 );
 
@@ -36,7 +41,7 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   if (!req.session.cart) {
-      req.session.cart = [];
+    req.session.cart = [];
   }
   next();
 });

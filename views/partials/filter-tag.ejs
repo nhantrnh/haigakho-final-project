@@ -1,0 +1,22 @@
+<% if (activeFilters && activeFilters.length > 0) { %>
+<div class="container mt-3">
+  <div class="active-filters">
+    <% activeFilters.forEach(function(filter) { %>
+    <span class="filter-tag">
+      <%= filter.label %>
+      <a
+        class="remove-filter"
+        data-key="<%= filter.type %>"
+        data-value="<%= filter.value %>"
+        href="#"
+        >&times;</a
+      >
+    </span>
+    <% }); %> <% if (activeFilters.length > 1) { %>
+    <a class="remove-all-filter btn btn-sm btn-outline-danger ms-2"
+      >Clear All</a
+    >
+    <% } %>
+  </div>
+</div>
+<% } %>

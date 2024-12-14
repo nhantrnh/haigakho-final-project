@@ -1,302 +1,122 @@
 // controllers/productController.js
 const Product = require("../models/Product");
 const Category = require("../models/Category");
+const {
+  buildSearchFilter,
+  buildCategoryFilter,
+  buildMaterialFilter,
+  buildBrandFilter,
+  buildPriceRangeFilter,
+  buildActiveFilters,
+} = require("../helpers/productHelper");
 
+// Constants
+const ITEMS_PER_PAGE = 8;
+const PRICE_RANGES = [
+  { min: 0, max: 100, label: "$0 - $100" },
+  { min: 100, max: 200, label: "$100 - $200" },
+  { min: 200, max: 300, label: "$200 - $300" },
+  { min: 300, max: 500, label: "$300 - $500" },
+  { min: 500, max: 10000, label: "$500+" },
+];
+
+const renderAjaxTemplates = async (
+  res,
+  { products, pagination, activeFilters }
+) => {
+  const [productListHTML, paginationHTML, filterTagHTML] = await Promise.all([
+    renderTemplate(res, "partials/product-list", { products }),
+    renderTemplate(res, "partials/pagination", {
+      currentQuery: res.req.query,
+      pagination,
+    }),
+    renderTemplate(res, "partials/filter-tag", { activeFilters }),
+  ]);
+
+  return { productListHTML, paginationHTML, filterTagHTML };
+};
+
+const renderTemplate = (res, template, data) => {
+  return new Promise((resolve, reject) => {
+    res.render(template, { ...data, layout: false }, (err, html) => {
+      if (err) reject(err);
+      else resolve(html);
+    });
+  });
+};
+
+// Main controller function
 exports.getProducts = async (req, res) => {
   try {
+    const { keyword, category, material, brand, priceRange } = req.query;
     const page = parseInt(req.query.page) || 1;
-    const limit = 8; // Items per page
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * ITEMS_PER_PAGE;
 
-    const { keyword, category, material, brand, priceRange } = req.query; // Lấy danh sách category từ query params
-    let filter = {};
-    let selectedCategories = [];
-    let selectedMaterials = [];
-    let selectedBrands = [];
-    let selectedPriceRanges = [];
+    // Build filter
+    const filterComponents = await Promise.all([
+      buildSearchFilter(keyword),
+      buildCategoryFilter(category),
+      buildMaterialFilter(material),
+      buildBrandFilter(brand),
+      buildPriceRangeFilter(priceRange),
+    ]);
+    const filter = { $and: filterComponents.filter((f) => f !== null) };
 
-    // Define price ranges
-    const priceRanges = [
-      { min: 0, max: 100, label: "$0 - $100" },
-      { min: 100, max: 200, label: "$100 - $200" },
-      { min: 200, max: 300, label: "$200 - $300" },
-      { min: 300, max: 500, label: "$300 - $500" },
-      { min: 500, max: 10000, label: "$500+" },
-    ];
+    // Fetch data
+    const [categories, materials, brands, totalProducts, products] =
+      await Promise.all([
+        Category.find(),
+        Product.distinct("material"),
+        Product.distinct("brand"),
+        Product.countDocuments(filter),
+        Product.find(filter)
+          .populate("categoryId", "name")
+          .skip(skip)
+          .limit(ITEMS_PER_PAGE),
+      ]);
 
-    // Search filter
-    if (keyword) {
-      filter.$or = [
-        { name: { $regex: keyword, $options: "i" } },
-        { description: { $regex: keyword, $options: "i" } },
-      ];
-    }
+    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
+    const selectedFilters = {
+      selectedCategories: category?.split(",") || [],
+      selectedMaterials: material?.split(",") || [],
+      selectedBrands: brand?.split(",") || [],
+      selectedPriceRanges: priceRange?.split(",") || [],
+    };
 
-    // Lọc theo category
-    if (category) {
-      const categoryNames = category ? category.split(",") : [];
-      selectedCategories = Array.isArray(categoryNames)
-        ? categoryNames
-        : [categoryNames];
+    const activeFilters = buildActiveFilters(selectedFilters, categories);
+    console.log(activeFilters);
+    const pagination = {
+      page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      nextPage: page + 1,
+      prevPage: page - 1,
+    };
 
-      // Lấy categories có name match
-      const matchedCategories = await Category.find({
-        name: { $in: selectedCategories },
-      });
-      // Filter bằng array của category IDs
-      if (matchedCategories.length > 0) {
-        filter.categoryId = {
-          $in: matchedCategories.map((cat) => cat._id),
-        };
-      }
-    }
-
-    // Lọc theo material
-    if (material) {
-      const materialArray = material ? material.split(",") : [];
-      selectedMaterials = Array.isArray(materialArray)
-        ? materialArray
-        : [materialArray];
-      filter.material = { $in: selectedMaterials };
-    }
-
-    // Lọc theo brand
-    if (brand) {
-      const brandArray = brand ? brand.split(",") : [];
-      selectedBrands = Array.isArray(brandArray) ? brandArray : [brandArray];
-      filter.brand = { $in: selectedBrands };
-    }
-
-    // Price range filter
-    if (priceRange) {
-      const priceRangeArray = priceRange ? priceRange.split(",") : [];
-      selectedPriceRanges = Array.isArray(priceRangeArray)
-        ? priceRangeArray
-        : [priceRangeArray];
-      if (selectedPriceRanges.length > 0) {
-        const priceQueries = selectedPriceRanges.map((range) => {
-          const [min, max] = range.split("-").map(Number);
-          return { price: { $gte: min, $lte: max } };
-        });
-        filter.$or = priceQueries;
-      }
-    }
-
-    // Fetch sản phẩm từ database
-    //const products = await Product.find(filter).populate("categoryId", "name");
-
-    // Lấy danh sách tất cả các category
-    const categories = await Category.find();
-
-    // Lấy danh sách tất cả các material
-    const materials = await Product.distinct("material");
-
-    // Lấy danh sách tất cả các brand
-    const brands = await Product.distinct("brand");
-
-    // Build active filters array for tags
-    let activeFilters = [];
-
-    if (selectedCategories.length) {
-      activeFilters = [
-        ...activeFilters,
-        ...selectedCategories.map((c) => ({
-          type: "category",
-          value: c,
-          label: getFilterLabel("category", c, categories),
-        })),
-      ];
-    }
-
-    if (selectedMaterials.length) {
-      activeFilters = [
-        ...activeFilters,
-        ...selectedMaterials.map((m) => ({
-          type: "material",
-          value: m,
-          label: m,
-        })),
-      ];
-    }
-
-    if (selectedBrands.length) {
-      activeFilters = [
-        ...activeFilters,
-        ...selectedBrands.map((b) => ({
-          type: "brand",
-          value: b,
-          label: b,
-        })),
-      ];
-    }
-
-    if (selectedPriceRanges.length) {
-      activeFilters = [
-        ...activeFilters,
-        ...selectedPriceRanges.map((p) => ({
-          type: "priceRange",
-          value: p,
-          label: getFilterLabel("priceRange", p),
-        })),
-      ];
-    }
-
-    // Get total products count for pagination
-    const totalProducts = await Product.countDocuments(filter);
-    const totalPages = Math.ceil(totalProducts / limit);
-
-    // Modify product query to include pagination
-    const products = await Product.find(filter)
-      .populate("categoryId", "name")
-      .skip(skip)
-      .limit(limit);
-
-    if (req.headers.accept && req.headers.accept.includes('application/json')) {
-      return res.json({
+    // Handle AJAX requests
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      const templates = await renderAjaxTemplates(res, {
         products,
-        categories,
-        materials,
-        brands,
-        priceRanges,
+        pagination,
         activeFilters,
-        pagination: {
-          page,
-          totalPages,
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
-          nextPage: page + 1,
-          prevPage: page - 1,
-        },
       });
+      return res.json({ success: true, ...templates });
     }
 
-    res.render("products/list", {
+    // Render full page
+    return res.render("products/list", {
       products,
       categories,
       materials,
       brands,
-      priceRanges,
-      keyword, // Truyền keyword vào view
-      selectedCategories, // Truyền danh sách các category đã chọn
-      selectedMaterials, // Truyền danh sách các material đã chọn
-      selectedBrands, // Truyền danh sách các brand đã chọn
-      selectedPriceRanges, // Truyền danh sách các price range đã chọn
-      activeFilters, // Truyền danh sách các filter đã chọn
-      removeFilterFromQuery, // Truyền hàm xử lý xóa filter
-      currentQuery: req.query, // Truyền query params hiện tại
-      pagination: {
-        page,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
-        nextPage: page + 1,
-        prevPage: page - 1,
-      },
+      priceRanges: PRICE_RANGES,
+      keyword,
+      ...selectedFilters,
+      activeFilters,
+      currentQuery: req.query,
+      pagination,
     });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Server error");
-  }
-};
-
-
-exports.paging = async (req, res) => {
-  try {
-    const page = parseInt(req.body.page) || 1;
-    const limit = 8; // Items per page
-    const skip = (page - 1) * limit;
-
-    const filter = req.body.filter || {}; // Use filter sent in the body
-
-    // Get total products count for pagination
-    const totalProducts = await Product.countDocuments(filter);
-    const totalPages = Math.ceil(totalProducts / limit);
-
-    // Get the products with pagination
-    const products = await Product.find(filter)
-      .skip(skip)
-      .limit(limit);
-
-    res.json({
-      products,
-      pagination: {
-        page,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
-        nextPage: page + 1,
-        prevPage: page - 1,
-      },
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Server error");
-  }
-};
-exports.filter = async (req, res) => {
-  try {
-    const { keyword, category, material, brand, priceRange } = req.body; // Take the filters from body
-    let filter = {};
-
-    // Search filter
-    if (keyword) {
-      filter.$or = [
-        { name: { $regex: keyword, $options: "i" } },
-        { description: { $regex: keyword, $options: "i" } },
-      ];
-    }
-
-    // Filter by category
-    if (category) {
-      const categoryNames = category.split(",");
-      const matchedCategories = await Category.find({
-        name: { $in: categoryNames },
-      });
-      if (matchedCategories.length > 0) {
-        filter.categoryId = {
-          $in: matchedCategories.map((cat) => cat._id),
-        };
-      }
-    }
-
-    // Filter by material
-    if (material) {
-      const materials = material.split(",");
-      filter.material = { $in: materials };
-    }
-
-    // Filter by brand
-    if (brand) {
-      const brands = brand.split(",");
-      filter.brand = { $in: brands };
-    }
-
-    // Filter by price range
-    if (priceRange) {
-      const priceRangeArray = priceRange.split(",");
-      const priceQueries = priceRangeArray.map((range) => {
-        const [min, max] = range.split("-").map(Number);
-        return { price: { $gte: min, $lte: max } };
-      });
-      filter.$or = priceQueries;
-    }
-
-    res.json({ filter });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Server error");
-  }
-};
-exports.sort = async (req, res) => {
-  try {
-    const { sortBy, sortOrder } = req.body; // Get sorting options from body
-    const sortOptions = {};
-
-    if (sortBy) {
-      sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
-    }
-
-    res.json({ sortOptions });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Server error");
@@ -324,18 +144,5 @@ exports.getProductDetail = async (req, res) => {
   } catch (error) {
     console.error("Error:", error); // Thêm log
     res.status(500).send("Lỗi server");
-  }
-};
-
-const getFilterLabel = (type, value, categories) => {
-  switch (type) {
-    case "category":
-      const category = categories.find((c) => c._id.toString() === value);
-      return category ? category.name : value;
-    case "priceRange":
-      const [min, max] = value.split("-");
-      return `$${min} - $${max}`;
-    default:
-      return value;
   }
 };
