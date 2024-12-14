@@ -1,0 +1,13 @@
+<!-- views/partials/product-list.ejs -->
+<% products.forEach(function(product) { %>
+<div class="col-12 col-md-4 col-lg-3 mb-5" data-product-id="<%= product._id %>">
+  <a class="product-item" href="/shop/<%= product._id %>">
+    <img src="<%= product.imageUrl %>" class="img-fluid product-thumbnail" />
+    <h3 class="product-title"><%= product.name %></h3>
+    <strong class="product-price">$<%= product.price %></strong>
+    <span class="icon-cross">
+      <img src="/images/cross.svg" class="img-fluid" />
+    </span>
+  </a>
+</div>
+<% }); %>
