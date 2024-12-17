@@ -46,7 +46,10 @@
                 </figure>
               </div>
               <div class="col-md-6">
-                <aside class="product-info">
+                <aside
+                  class="product-info"
+                  data-product-id="<%= product._id %>"
+                >
                   <h2 class="product-name text-left" style="font-weight: bold">
                     <%= product.name %>
                   </h2>
@@ -175,5 +178,6 @@
     <script src="/js/tiny-slider.js"></script>
     <script src="/js/custom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
   </body>
 </html>

@@ -46,9 +46,9 @@ function toggleCartSidebar() {
 $(document).ready(function () {
   // Khi bấm vào nút "ADD TO CART"
   $(".add-to-cart").on("click", function () {
-    var productCart = $(this).closest(".productCart"); // Lấy container sản phẩm
-    var productId = productCart.attr("id"); // Lấy ID của sản phẩm
-    var quantity = parseInt(productCart.find(".product-count").val()) || 0; // Lấy số lượng người dùng muốn thêm
+    var productCart = $(this).closest(".product-info"); // Lấy container sản phẩm
+    var productId = productCart.data("product-id"); // Lấy ID của sản phẩm
+    var quantity = parseInt(productCart.find(".quantity-value").val()) || 0; // Lấy số lượng người dùng muốn thêm
     var stock = parseInt(productCart.find(".product-amount").text()) || 0; // Lấy số lượng tồn kho
     var cartItem = $(`.cart-item[data-product-id="${productId}"]`); // Sử dụng `data-product-id` để xác định sản phẩm
     var currentQuantity = 0;
@@ -83,6 +83,36 @@ $(document).ready(function () {
           // Cập nhật giỏ hàng trong sidebar
           updateCartSidebar(response.cart);
           saveCartToLocalStorage(response.cart); // Lưu giỏ hàng vào localStorage
+
+          // Tạo bản sao của ảnh sản phẩm
+          var productImage = $(".product-image").clone();
+          productImage.css({
+            position: "absolute",
+            top: $(".product-image").offset().top,
+            left: $(".product-image").offset().left,
+            width: $(".product-image").width(),
+            height: $(".product-image").height(),
+            zIndex: 1000,
+          });
+          $("body").append(productImage);
+
+          // Di chuyển ảnh đến icon giỏ hàng
+          gsap.to(productImage, {
+            duration: 1,
+            x:
+              $(".cart-icon-container").offset().left -
+              productImage.offset().left,
+            y:
+              $(".cart-icon-container").offset().top -
+              productImage.offset().top,
+            width: 50,
+            height: 50,
+            opacity: 0.5,
+            onComplete: function () {
+              // Xóa bản sao sau khi animation kết thúc
+              productImage.remove();
+            },
+          });
         } else {
           alert(response.message || "Failed to add product to cart");
         }
