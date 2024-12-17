@@ -25,38 +25,6 @@
 })();
 
 // public/js/custom.js
-// document.addEventListener("DOMContentLoaded", () => {
-//   const searchInput = document.getElementById("searchInput");
-//   const modalKeywordInput = document.getElementById("modalKeywordInput");
-//   const filterForm = document.getElementById("filterForm");
-
-//   // Sync search term to modal's hidden input
-//   if (searchInput && modalKeywordInput) {
-//     searchInput.addEventListener("input", (e) => {
-//       modalKeywordInput.value = e.target.value;
-//     });
-//     // Set initial value
-//     modalKeywordInput.value = searchInput.value;
-//   }
-
-//   // Debounced search
-//   let searchTimeout;
-//   searchInput?.addEventListener("input", (e) => {
-//     clearTimeout(searchTimeout);
-//     searchTimeout = setTimeout(() => {
-//       // Get current filter form data
-//       const formData = new FormData(filterForm);
-//       // Update search term
-//       formData.set("keyword", e.target.value);
-//       // Convert to URL params
-//       const params = new URLSearchParams(formData);
-//       // Navigate with all params
-//       window.location.href = `/products?${params.toString()}`;
-//     }, 500);
-//   });
-// });
-
-// public/js/custom.js
 document.getElementById("signoutBtn")?.addEventListener("click", async (e) => {
   e.preventDefault();
   try {
@@ -263,4 +231,68 @@ $(document).ready(function () {
     var savedCart = JSON.parse(localStorage.getItem("cart"));
     updateCartSidebar(savedCart);
   }
+});
+
+$(document).ready(function () {
+  // Related Products Slider
+  var slider = tns({
+    container: "#relatedProductsSlider",
+    items: 1,
+    responsive: {
+      640: {
+        edgePadding: 20,
+        gutter: 20,
+        items: 2,
+      },
+      700: {
+        gutter: 30,
+      },
+      900: {
+        items: 3,
+      },
+    },
+    slideBy: "page",
+    autoplay: true,
+    controls: false, // Ẩn nút điều hướng
+    nav: true, // Hiện nút điều hướng dưới dạng chấm tròn
+    navPosition: "bottom", // Đặt nút điều hướng ở dưới slider
+    mouseDrag: true,
+    autoplayButtonOutput: false,
+  });
+
+  // Image Zoom (using a library like ElevateZoom or similar)
+  // Example using jQuery Zoom (https://www.jacklmoore.com/zoom/)
+  $(".product-image-container").zoom({
+    url: $("#mainProductImage").attr("src"), // Use the product image URL for zooming
+    magnify: 1.5,
+  });
+
+  $(".quantity-increment").click(function () {
+    var input = $(this).siblings(".quantity-value");
+    var val = parseInt(input.val());
+    var max = parseInt(input.attr("max"));
+    if (val < max) {
+      input.val(val + 1);
+    }
+  });
+
+  $(".quantity-decrement").click(function () {
+    var input = $(this).siblings(".quantity-value");
+    var val = parseInt(input.val());
+    if (val > 1) {
+      input.val(val - 1);
+    }
+  });
+  // Gắn sự kiện input cho ô nhập số lượng
+  $(".quantity-value").on("input", function () {
+    var inputElement = $(this);
+    var stock = parseInt(inputElement.attr("max")); // Lấy số lượng kho từ thuộc tính max
+    var currentValue = parseInt(inputElement.val()); // Lấy giá trị hiện tại trong input
+
+    // Kiểm tra nếu giá trị nhập lớn hơn stock
+    if (currentValue > stock) {
+      // Nếu lớn hơn stock, đặt lại giá trị của input thành stock
+      inputElement.val(stock);
+    }
+  });
 });
