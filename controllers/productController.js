@@ -84,7 +84,7 @@ exports.getProducts = async (req, res) => {
     };
 
     const activeFilters = buildActiveFilters(selectedFilters, categories);
-    console.log(activeFilters);
+
     const pagination = {
       page,
       totalPages,

@@ -14,6 +14,7 @@ $(document).ready(function () {
       }
 
       searchTimeout = setTimeout(function () {
+        showLoading();
         $.ajax({
           url: "/shop",
           type: "GET",
@@ -33,6 +34,9 @@ $(document).ready(function () {
           error: function (error) {
             console.error("Lỗi tìm kiếm:", error);
           },
+          complete: function () {
+            hideLoading();
+          },
         });
       }, 500);
     });
@@ -40,6 +44,7 @@ $(document).ready(function () {
     // Filter Modal Form Submission
     $("#filterForm").on("submit", function (event) {
       event.preventDefault(); // Ngăn chặn submit form thông thường
+      showLoading();
       const formData = new FormData(this);
       const keyword = $("#searchInput").val().trim();
       if (keyword.length > 0) {
@@ -83,12 +88,14 @@ $(document).ready(function () {
         success: function (response) {
           $("#product-list").html($(response.productListHTML));
           $("#filter-tag-container").html($(response.filterTagHTML));
-          console.log(response);
           $(".pagination").html($(response.paginationHTML));
           history.pushState(null, "", `/shop?${urlParams.toString()}`);
         },
         error: function (error) {
           console.error("Lỗi khi lọc sản phẩm:", error);
+        },
+        complete: function () {
+          hideLoading();
         },
       });
     });
@@ -96,6 +103,7 @@ $(document).ready(function () {
     // Pagination Links
     $(document).on("click", ".pagination .page-link", function (event) {
       event.preventDefault();
+      showLoading();
 
       const $link = $(this);
       if ($link.parent().hasClass("disabled")) return;
@@ -110,11 +118,15 @@ $(document).ready(function () {
         type: "GET",
         success: function (response) {
           if (response.success) {
-            // Cập nhật danh sách sản phẩm
             $("#product-list").html(response.productListHTML);
-
-            // Cập nhật phân trang
             $(".pagination").html(response.paginationHTML);
+            // Scroll to product section
+            $("html, body").animate(
+              {
+                scrollTop: $(".product-section").offset().top - 100,
+              },
+              500
+            );
 
             // Cập nhật URL (nếu cần)
             history.pushState(null, "", `/shop${params.toString()}`);
@@ -123,12 +135,16 @@ $(document).ready(function () {
         error: function (error) {
           console.error("Lỗi chuyển trang:", error);
         },
+        complete: function () {
+          hideLoading();
+        },
       });
     });
 
     // Filter Tags Links
     $(document).on("click", ".remove-filter", function (event) {
       event.preventDefault();
+      showLoading();
 
       const $link = $(this);
       if ($link.parent().hasClass("disabled")) return;
@@ -160,12 +176,16 @@ $(document).ready(function () {
         error: function (error) {
           console.error("Lỗi xóa filter tag:", error);
         },
+        complete: function () {
+          hideLoading();
+        },
       });
     });
 
     // Filter Tags Remove all
     $(document).on("click", ".remove-all-filter", function (event) {
       event.preventDefault();
+      showLoading();
 
       urlParams = new URLSearchParams();
       if ($("#searchInput").val().trim().length > 0) {
@@ -192,6 +212,9 @@ $(document).ready(function () {
         },
         error: function (error) {
           console.error("Lỗi xóa filter tag:", error);
+        },
+        complete: function () {
+          hideLoading();
         },
       });
     });
@@ -230,4 +253,12 @@ function removeValueFromURLParams(urlParams, key, value) {
 function uncheckFilterForm(key, value) {
   const $checkbox = $(`#filterForm input[name="${key}"][value="${value}"]`);
   $checkbox.prop("checked", false);
+}
+
+function showLoading() {
+  $("#loading-overlay").fadeIn(200);
+}
+
+function hideLoading() {
+  $("#loading-overlay").fadeOut(200);
 }

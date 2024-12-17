@@ -11,7 +11,6 @@
     <link rel="shortcut icon" href="/favicon.png" />
     <meta name="description" content="" />
     <meta name="keywords" content="bootstrap, bootstrap4" />
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
     <!-- Fix đường dẫn CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet" />
@@ -21,6 +20,7 @@
     />
     <link href="/css/tiny-slider.css" rel="stylesheet" />
     <link href="/css/style.css" rel="stylesheet" />
+    <link href="/css/product.css" rel="stylesheet" />
 
     <title><%= product.name %> | HAGAKO</title>
   </head>
@@ -30,29 +30,26 @@
     <%- include('../partials/header', { page: 'list'}) %>
     <!-- End Header/Navigation -->
 
-    <div class="before-footer-section">
+    <div class="product-detail-section">
       <div class="container-fluid">
         <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-3 productCart product" id="<%= product._id %>">
-              <div class="rowCustom card align-items-center">
-                <div class="column text-center">
+          <article class="card product-detail-container">
+            <div class="row">
+              <div class="col-md-6">
+                <figure class="product-image-container">
                   <img
                     src="<%= product.imageUrl %>"
                     class="product-image"
                     alt="<%= product.name %>"
+                    id="mainProductImage"
                   />
-                </div>
-                <div class="column">
+                </figure>
+              </div>
+              <div class="col-md-6">
+                <aside class="product-info">
                   <h2 class="product-name text-left" style="font-weight: bold">
                     <%= product.name %>
                   </h2>
-                  <p>
-                    ID:
-                    <span class="product-id" style="font-weight: bold"
-                      ><%= product._id %></span
-                    >
-                  </p>
                   <p>
                     Category:
                     <span class="product-categoryName" style="font-weight: bold"
@@ -68,7 +65,9 @@
                   </p>
                   <p>
                     Amount:
-                    <span class="product-amount" style="font-weight: bold"><%= product.stock %></span>
+                    <span class="product-amount" style="font-weight: bold"
+                      ><%= product.stock %></span
+                    >
                   </p>
                   <h2
                     class="product-price"
@@ -78,120 +77,103 @@
                     currency: 'USD' }).format(product.price) %>
                   </h2>
 
-                  <p style="display: flex; align-items: center; gap: 5px">
-                    Choose amount:
-                    <span class="quantity">
-                      <button class="minus-btnn pl-3">-</button>
+                  <div class="quantity-selector">
+                    <label for="product-quantity">Choose amount:</label>
+                    <div class="quantity-input">
+                      <button class="quantity-decrement">-</button>
                       <input
-                        type="text"
-                        class="product-count"
+                        type="number"
+                        id="product-quantity"
+                        class="quantity-value"
                         value="1"
-                        style="width: 50px; text-align: center"
+                        min="1"
                         max="<%= product.stock %>"
                       />
-                      <button class="plus-btnn">+</button>
-                    </span>
-                  </p>
-                  <button class="add-to-cart add-btn">ADD TO CART</button>
-                </div>
-                <div class="column">
-                  <h5 class="titleDetails">DESCRIPTION</h5>
-                  <p class="card-text"><%= product.description %></p>
+                      <button class="quantity-increment">+</button>
+                    </div>
+                  </div>
+                  <button class="add-to-cart add-btn">
+                    <i class="fas fa-cart-plus"></i> ADD TO CART
+                  </button>
+                </aside>
+              </div>
+            </div>
+            <div class="row pt-4">
+              <div class="col-md-6">
+                <h5 class="titleDetails">DESCRIPTION</h5>
+                <p class="description-text"><%= product.description %></p>
+              </div>
+              <div class="col-md-6">
+                <!-- Product Specs -->
+                <div class="product-specs mb-4">
+                  <h5>Specifications</h5>
+                  <table class="specs-table">
+                    <tr>
+                      <td>Dimensions:</td>
+                      <td>
+                        <%= product.dimensions.width %>W x <%=
+                        product.dimensions.depth %>D x <%=
+                        product.dimensions.height %>H cm
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Material:</td>
+                      <td><%= product.material %></td>
+                    </tr>
+                    <tr>
+                      <td>Available Colors:</td>
+                      <td><%= product.colors.join(', ') %></td>
+                    </tr>
+                  </table>
                 </div>
               </div>
             </div>
-          </div>
+          </article>
         </div>
       </div>
     </div>
 
-    <!-- Start Related Products Section -->
-    <!-- views/products/detail.ejs -->
-    <!-- Add this before the footer -->
-
-    <div class="untree_co-section">
+    <!-- Related Products Section -->
+    <section class="untree_co-section related-products-slider">
       <div class="container">
-        <div class="row mb-5">
+        <div class="row">
           <div class="col-md-12">
             <h2 class="h3 mb-4 text-black">Related Products</h2>
           </div>
-          <div class="row">
-            <% relatedProducts.forEach(function(relatedProduct) { %>
-            <div class="col-12 col-md-4 col-lg-3 mb-5">
-              <a class="product-item" href="/shop/<%= relatedProduct._id %>">
-                <img
-                  src="<%= relatedProduct.imageUrl %>"
-                  class="img-fluid product-thumbnail"
-                />
-                <h3><%= relatedProduct.name %></h3>
-                <strong class="product-price">
-                  <%= new Intl.NumberFormat('en-EN', { style: 'currency',
-                  currency: 'USD' }).format(relatedProduct.price) %>
-                </strong>
-                <span class="icon-cross">
-                  <img src="/images/cross.svg" class="img-fluid" />
-                </span>
-              </a>
-            </div>
-            <% }); %>
+        </div>
+        <div class="row" id="relatedProductsSlider">
+          <% relatedProducts.forEach(function(relatedProduct) { %>
+          <div class="col-12 col-md-4 col-lg-3 item">
+            <a class="product-item" href="/shop/<%= relatedProduct._id %>">
+              <img
+                src="<%= relatedProduct.imageUrl %>"
+                class="img-fluid product-thumbnail"
+              />
+              <h3><%= relatedProduct.name %></h3>
+              <strong class="product-price">
+                <%= new Intl.NumberFormat('en-EN', { style: 'currency',
+                currency: 'USD' }).format(relatedProduct.price) %>
+              </strong>
+              <span class="icon-cross">
+                <img src="/images/cross.svg" class="img-fluid" />
+              </span>
+            </a>
           </div>
+          <% }); %>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Footer -->
     <!-- Start Footer Section -->
     <%- include('../partials/footer') %>
-
     <!-- End Footer Section -->
 
     <!-- Fix đường dẫn JS -->
     <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="/js/tiny-slider.js"></script>
     <script src="/js/custom.js"></script>
-    <script>
-      $(document).ready(function() {
-        // Gắn sự kiện input cho ô nhập số lượng
-        $('.product-count').on('input', function() {
-          var inputElement = $(this);
-          var stock = parseInt(inputElement.attr('max')); // Lấy số lượng kho từ thuộc tính max
-          var currentValue = parseInt(inputElement.val()); // Lấy giá trị hiện tại trong input
-      
-          // Kiểm tra nếu giá trị nhập lớn hơn stock
-          if (currentValue > stock) {
-            // Nếu lớn hơn stock, đặt lại giá trị của input thành stock
-            inputElement.val(stock);
-            alert('Số lượng không thể lớn hơn số lượng trong kho!');
-          }
-        });
-      
-        // Gắn sự kiện cho nút cộng
-        // Gắn sự kiện cho nút cộng
-        $('.plus-btnn').off('click').on('click', function() {
-          var inputElement = $(this).siblings('.product-count'); // Lấy input liền kề
-          var stock = parseInt(inputElement.attr('max')); // Lấy số lượng kho từ thuộc tính max
-          var currentValue = parseInt(inputElement.val());
-          
-          // Tăng số lượng nếu không vượt quá stock
-          if (currentValue < stock) {
-            inputElement.val(currentValue + 1);
-          } else {
-            alert('Số lượng không thể lớn hơn số lượng trong kho!');
-          }
-        });
-
-      
-        // Gắn sự kiện cho nút trừ
-        $('.minus-btnn').on('click', function() {
-          var inputElement = $(this).siblings('.product-count'); // Lấy input liền kề
-          var currentValue = parseInt(inputElement.val());
-      
-          // Giảm số lượng nếu không nhỏ hơn 1
-          if (currentValue > 1) {
-            inputElement.val(currentValue - 1);
-          }
-        });
-      });      
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
   </body>
 </html>

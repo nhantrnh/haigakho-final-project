@@ -1,0 +1,111 @@
+/* Start Product Detail Style */
+
+.product-detail-section {
+  padding: 4rem 0 1rem 0 !important;
+}
+.product-detail-container {
+  padding: 30px;
+  margin-bottom: 50px;
+}
+
+.product-image-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.product-image-container img {
+  max-width: 100%;
+  height: auto;
+  cursor: zoom-in; /* Hiển thị icon zoom khi di chuột qua */
+}
+
+.description-text {
+  font-size: 16px;
+}
+
+/* Related Products Slider */
+.related-products-slider .tns-nav {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.related-products-slider .tns-nav button {
+  background-color: #ccc;
+  border: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 0 5px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.related-products-slider .tns-nav button.tns-nav-active {
+  background-color: #333;
+}
+
+.related-products-slider .product-item {
+  text-align: center;
+  padding: 15px;
+}
+
+.related-products-slider .product-item {
+  text-decoration: none;
+}
+
+.related-products-slider .product-item:hover {
+  text-decoration: underline;
+}
+
+.add-to-cart i {
+  margin-right: 8px; /* Khoảng cách giữa icon và chữ */
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Khoảng cách giữa label và input */
+  margin-bottom: 20px; /* Khoảng cách với phần tử bên dưới */
+}
+
+.quantity-selector label {
+  font-size: 20px;
+}
+
+.quantity-input {
+  display: flex;
+  border: 1.5px solid #ccc;
+  border-radius: 8px; /* Bo tròn góc */
+  overflow: hidden; /* Ẩn phần thừa khi bo góc */
+}
+
+.quantity-decrement,
+.quantity-increment {
+  background-color: #f5f5f5;
+  color: #333;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu khi hover */
+}
+
+.quantity-decrement:hover,
+.quantity-increment:hover {
+  background-color: #eee;
+}
+
+.quantity-value {
+  width: 50px;
+  text-align: center;
+  border: none;
+  font-size: 16px;
+}
+
+/* Ẩn mũi tên lên xuống trong Chrome, Safari, Edge */
+.quantity-value::-webkit-outer-spin-button,
+.quantity-value::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* End Product Detail Style */
