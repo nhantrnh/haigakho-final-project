@@ -1511,6 +1511,15 @@ p {
   z-index: 10; /* Đảm bảo nó nổi trên icon */
 }
 
+.cart-sidebar .cart-summary {
+  padding-left: 10px;
+}
+
+.cart-sidebar .cart-summary p {
+  font-size: 18px;
+  font-weight: bold;
+}
+
 #loading-overlay {
   position: fixed;
   top: 0;
