@@ -94,12 +94,18 @@
         </li>
         <% } %>
 
-        <li class="cart cart-icon-container nav-item <%= page === 'cart' ? 'active' : '' %>">
-          <a class="nav-link" href="javascript:void(0)" onclick="toggleCartSidebar()">
+        <li
+          class="cart cart-icon-container nav-item <%= page === 'cart' ? 'active' : '' %>"
+        >
+          <a
+            class="nav-link"
+            href="javascript:void(0)"
+            onclick="toggleCartSidebar()"
+          >
             <img src="/images/cart.svg" alt="Cart" />
             <span id="cart-count">0</span>
-          </a>         
-        </li>     
+          </a>
+        </li>
       </ul>
     </div>
   </div>
