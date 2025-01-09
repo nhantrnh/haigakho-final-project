@@ -1351,8 +1351,8 @@ p {
 .cart-sidebar {
   position: fixed;
   top: 0;
-  right: -300px; /* Bắt đầu ngoài màn hình */
-  width: 300px;
+  right: -400px; /* Bắt đầu ngoài màn hình */
+  width: 400px;
   height: 100%;
   background-color: white;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
@@ -1484,9 +1484,6 @@ p {
   border-top: 1px solid #ddd;
 }
 
-.btn-primary {
-  width: 100%;
-}
 .cart-icon-container {
   position: relative; /* Đặt container để sử dụng vị trí tương đối */
   display: inline-block;
