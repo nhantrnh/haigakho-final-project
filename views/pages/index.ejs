@@ -592,8 +592,63 @@
 
     <!-- Start Footer Section -->
     <%- include('../partials/footer') %>
-    <!-- End Footer Section -->
+    <div>adhauydhwausdwh</div>
+    <!-- Form input file -->
+<input type="file" id="formFile" />
 
+<!-- Nút Upload -->
+<button class="btnUpload">Upload</button>
+
+<!-- Form để gửi thông tin sản phẩm -->
+<form id="productForm">
+    <input type="text" id="imageUrl" name="imageUrl" />
+    <!-- Các trường khác -->
+</form>
+
+    <!-- End Footer Section -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-analytics.js";
+      import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-storage.js";
+  
+      const firebaseConfig = {
+        apiKey: "AIzaSyDKKnJIIrD9T9flxWH_TnjwKgtggCUf6-A",
+        authDomain: "webproject-646b5.firebaseapp.com",
+        projectId: "webproject-646b5",
+        storageBucket: "webproject-646b5.appspot.com",
+        messagingSenderId: "87103126392",
+        appId: "1:87103126392:web:e21cff766c738e8754e68d",
+        measurementId: "G-SWGXFK1SFB"
+    };
+  
+      const firebase = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(firebase);
+      $(document).ready(function () {
+          $(document).on('click', '.btnUpload', function (e) {
+              console.log('aaaaa')
+              e.preventDefault();
+              const file = document.getElementById('formFile').files[0];
+              const metadata = {
+                  contentType: file.type,
+              }
+              const name = file.name;
+              const storage = getStorage();
+              const storageReference = storageRef(storage, file.name);
+              const uploadImg = uploadBytes(storageReference, file, metadata);
+              uploadImg.then(snapshot => {
+                  return getDownloadURL(storageReference);
+              }).then(url => {
+                  console.log(url);
+                  $('#imageUrl').val(url);
+                  $('#productForm').submit();
+                  alert('Thêm sản phẩm thành công')
+              }).catch(console.error);
+  
+          })
+      });
+  
+  </script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/tiny-slider.js"></script>
     <script src="js/custom.js"></script>

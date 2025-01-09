@@ -9,7 +9,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
     minLength: [3, "Username phải có ít nhất 3 ký tự"],
   },
-
+  password: {
+    type: String,
+    required: [true, "Password là bắt buộc"],
+    minlength: [6, "Password phải có ít nhất 6 ký tự"],
+  },
   email: {
     type: String,
     required: [true, "Email là bắt buộc"],
@@ -19,12 +23,28 @@ const userSchema = new mongoose.Schema({
       "Email không hợp lệ",
     ],
   },
-  password: {
+  name : { 
+    type: String, 
+    required: true, 
+    default: "User"
+  },
+  address: { type: String, default: "" },
+  avatar: { type: String, default: "" },
+  role: {
     type: String,
-    required: [true, "Password là bắt buộc"],
-    minlength: [6, "Password phải có ít nhất 6 ký tự"],
+    enum: ["user", "admin", "superadmin"],
+    default: "user",
+  },
+  status: {
+    type: String,
+    enum: ["active", "inactive", "banned"],
+    default: "active",
   },
   createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },
@@ -43,6 +63,6 @@ userSchema.pre("save", async function (next) {
   // Hash password
   this.password = await bcrypt.hash(this.password, 10);
   next();
-});
+}, {collection: "users"});
 
 module.exports = mongoose.model("User", userSchema);

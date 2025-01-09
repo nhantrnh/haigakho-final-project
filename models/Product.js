@@ -11,6 +11,10 @@ const productSchema = new mongoose.Schema({
     ref: "Category",
     required: true,
   },
+  subcategoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "SubCategory",
+  },
   brand: { type: String, default: "No brand" },
   dimensions: {
     width: Number,
@@ -25,8 +29,13 @@ const productSchema = new mongoose.Schema({
     average: { type: Number, default: 0 },
     count: { type: Number, default: 0 },
   },
+  status: {
+    type: String,
+    enum: ["onStock", "suspend", "ouOfStock"],
+    default: "onStock",
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-});
+}, {collection: "products"});
 
 module.exports = mongoose.model("Product", productSchema);
