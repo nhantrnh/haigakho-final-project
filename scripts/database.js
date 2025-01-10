@@ -9,19 +9,32 @@ const Review = require("../models/Review");
 
 async function autoCreateCollections() {
   try {
-    await mongoose.connect('mongodb+srv://haigakho:haigakho@hcmus.iiqtx.mongodb.net/hagako-web?retryWrites=true&w=majority&appName=HCMUS', {
+    await mongoose.connect("mongodb://localhost:27017/", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
-    const models = [Category, Product, SubCategory, User, Order, OrderDetail, Review];
+    const models = [
+      Category,
+      Product,
+      SubCategory,
+      User,
+      Order,
+      OrderDetail,
+      Review,
+    ];
 
     for (const model of models) {
       try {
         await model.init();
-        console.log(`Collection "${model.collection.collectionName}" sẵn sàng.`);
+        console.log(
+          `Collection "${model.collection.collectionName}" sẵn sàng.`
+        );
       } catch (err) {
-        console.error(`Lỗi khi tạo collection "${model.modelName}":`, err.message);
+        console.error(
+          `Lỗi khi tạo collection "${model.modelName}":`,
+          err.message
+        );
       }
     }
   } catch (error) {

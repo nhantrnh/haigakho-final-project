@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Category = require("../models/Category");
 
 mongoose.connect(
-  "mongodb+srv://haigakho:haigakho@hcmus.iiqtx.mongodb.net/hagako-web?retryWrites=true&w=majority&appName=HCMUS"
+  "mongodb+srv://haigakho:haigakho@hcmus.iiqtx.mongodb.net/hagako-web?retryWrites=true&w=majority&appName=HCMUS/hagako-web"
 );
 
 const categories = [
@@ -18,6 +18,14 @@ const categories = [
   {
     name: "Chair",
     description: "Various types of chairs for home and office.",
+  },
+  {
+    name: "Shelves",
+    description: "Stylish shelves for your living room or office.",
+  },
+  {
+    name: "Lamp",
+    description: "Stylish lamps for your home.",
   },
 ];
 

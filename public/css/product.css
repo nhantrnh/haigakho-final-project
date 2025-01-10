@@ -45,7 +45,8 @@
 }
 
 .related-products-slider .product-item {
-  text-align: center;
+  align-items: left;
+  text-align: left;
   padding: 15px;
 }
 

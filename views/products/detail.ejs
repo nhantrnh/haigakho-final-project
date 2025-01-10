@@ -152,7 +152,7 @@
                 src="<%= relatedProduct.imageUrl %>"
                 class="img-fluid product-thumbnail"
               />
-              <h3><%= relatedProduct.name %></h3>
+              <h5><%= relatedProduct.name %></h5>
               <strong class="product-price">
                 <%= new Intl.NumberFormat('en-EN', { style: 'currency',
                 currency: 'USD' }).format(relatedProduct.price) %>
