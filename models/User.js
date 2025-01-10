@@ -29,7 +29,10 @@ const userSchema = new mongoose.Schema({
     default: "User"
   },
   address: { type: String, default: "" },
-  avatar: { type: String, default: "" },
+  avatar: { 
+    type: String,
+    default: "https://firebasestorage.googleapis.com/v0/b/webproject-646b5.appspot.com/o/avt.jpg?alt=media&token=701a6f0a-08f0-4da6-b41a-ad245e07e9af" 
+  },
   role: {
     type: String,
     enum: ["user", "admin", "superadmin"],
