@@ -78,6 +78,13 @@ $(document).ready(function () {
         urlParams.append("priceRange", priceRangeValues.join(",")); // Thêm dạng dấu phẩy
       }
 
+      console.log("1. URL Params:", urlParams.toString());
+
+      // Thêm sort parameter vào URL hiện tại
+      urlParams.set("sort", $("#sortSelect").val());
+
+      console.log("2. URL Params:", urlParams.toString());
+
       $.ajax({
         url: "/shop",
         type: "GET",
@@ -212,6 +219,36 @@ $(document).ready(function () {
         },
         error: function (error) {
           console.error("Lỗi xóa filter tag:", error);
+        },
+        complete: function () {
+          hideLoading();
+        },
+      });
+    });
+
+    // Handle sort change
+    $("#sortSelect").on("change", function () {
+      event.preventDefault();
+      showLoading();
+
+      // Thêm sort parameter vào URL hiện tại
+      urlParams.set("sort", $(this).val());
+
+      $.ajax({
+        url: "/shop",
+        type: "GET",
+        data: urlParams.toString(),
+        success: function (response) {
+          if (response.success) {
+            $("#product-list").html(response.productListHTML);
+            $(".pagination").html(response.paginationHTML);
+
+            // Update URL
+            history.pushState(null, "", `/shop?${urlParams.toString()}`);
+          }
+        },
+        error: function (error) {
+          console.error("Sort error:", error);
         },
         complete: function () {
           hideLoading();
