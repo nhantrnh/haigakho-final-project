@@ -30,7 +30,11 @@
     <%- include('../partials/header', { page: 'list'}) %>
     <!-- End Header/Navigation -->
 
-    <div class="product-detail-section">
+    <div
+      class="product-detail-section"
+      data-product-id="<%= product._id %>"
+      id="productDetailSection"
+    >
       <div class="container-fluid">
         <div class="container">
           <article class="card product-detail-container">
@@ -136,6 +140,205 @@
       </div>
     </div>
 
+    <!-- Product Reviews Section -->
+    <section class="product-reviews-section">
+      <div class="container">
+        <div class="card p-4">
+          <div class="row">
+            <div class="col-12">
+              <h3 class="section-title mb-4">Customer Reviews</h3>
+
+              <!-- Rating Overview -->
+              <div class="rating-overview p-4 bg-light rounded mb-4">
+                <div class="row align-items-center">
+                  <div class="col-md-3 text-center">
+                    <div class="overall-rating">
+                      <h1 class="rating-average mb-0">
+                        <%= product.ratings.average.toFixed(1) %>
+                      </h1>
+                      <div class="stars">
+                        <% for(let i = 1; i <= 5; i++) { %>
+                        <i
+                          class="fas fa-star <%= i <= product.ratings.average ? 'text-warning' : 'text-muted' %>"
+                        ></i>
+                        <% } %>
+                      </div>
+                      <p class="text-muted">
+                        <%= product.ratings.count %> reviews
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-md-9">
+                    <div class="rating-bars">
+                      <% for(let i = 5; i >= 1; i--) { %>
+                      <div class="rating-bar d-flex align-items-center mb-2">
+                        <div class="stars me-2">
+                          <%= i %> <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <div class="progress flex-grow-1" style="height: 8px">
+                          <div
+                            class="review-progress-bar bg-warning"
+                            id="review-progress-bar-<%= i %>"
+                            data-percentage="<%= reviews.length > 0 ? (reviews.filter(r => Math.floor(r.rating) === i).length / reviews.length * 100) : 0 %>"
+                          ></div>
+                        </div>
+                        <span class="ms-2 text-muted">
+                          <%= reviews.filter(r => Math.floor(r.rating) ===
+                          i).length %>
+                        </span>
+                      </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add review -->
+              <% if (user) { %>
+              <div class="add-review-section mt-4 p-4 border rounded">
+                <h4>Write a Review</h4>
+                <form id="reviewForm" class="mt-3">
+                  <input
+                    type="hidden"
+                    name="productId"
+                    value="<%= product._id %>"
+                  />
+
+                  <!-- Rating -->
+                  <div class="form-group mb-3">
+                    <label>Your Rating</label>
+                    <div class="rating-input">
+                      <% for(let i = 5; i >= 1; i--) { %>
+                      <input
+                        type="radio"
+                        id="star<%= i %>"
+                        name="rating"
+                        value="<%= i %>"
+                        required
+                      />
+                      <label for="star<%= i %>" class="star">★</label>
+                      <% } %>
+                    </div>
+                  </div>
+
+                  <!-- Review Content -->
+                  <div class="form-group mb-3">
+                    <label for="reviewContent">Your Review</label>
+                    <textarea
+                      class="form-control"
+                      id="reviewContent"
+                      name="content"
+                      rows="3"
+                      required
+                      placeholder="Share your thoughts about this product..."
+                    ></textarea>
+                  </div>
+
+                  <!-- Image Upload -->
+                  <div class="form-group mb-3">
+                    <label>Add Photos (optional)</label>
+                    <input
+                      type="file"
+                      class="form-control"
+                      name="images"
+                      multiple
+                      accept="image/*"
+                      disabled
+                    />
+                    <small class="text-danger"
+                      >Uploading images is temporarily disabled. Please try
+                      again later.</small
+                    >
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">
+                    Submit Review
+                  </button>
+                </form>
+              </div>
+              <% } else { %>
+              <div class="text-center py-3">
+                <p>Please <a href="/signin">sign in</a> to write a review</p>
+              </div>
+              <% } %>
+
+              <!-- Reviews List -->
+              <div class="reviews-list">
+                <h4 class="mt-3 mb-3">Reviews</h4>
+                <% if(reviews.length > 0) { %> <%
+                reviews.forEach(function(review) { %>
+                <div class="review-item p-4 mb-4 border rounded">
+                  <div
+                    class="review-header d-flex justify-content-between align-items-center mb-3"
+                  >
+                    <div class="reviewer-info d-flex align-items-center">
+                      <div class="avatar me-3">
+                        <img
+                          src="<%= review.userId.avatar || '/images/default-avatar.png' %>"
+                          alt="User avatar"
+                          class="rounded-circle"
+                          style="width: 40px; height: 40px; object-fit: cover"
+                        />
+                      </div>
+                      <div>
+                        <h6 class="mb-0"><%= review.userId.name %></h6>
+                        <div class="stars">
+                          <% for(let i = 1; i <= 5; i++) { %>
+                          <i
+                            class="fas fa-star <%= i <= review.rating ? 'text-warning' : 'text-muted' %>"
+                          ></i>
+                          <% } %>
+                        </div>
+                      </div>
+                    </div>
+                    <small class="text-muted">
+                      <%= new Date(review.createdAt).toLocaleDateString() %>
+                    </small>
+                  </div>
+
+                  <div class="review-content">
+                    <p class="mb-3"><%= review.content %></p>
+                    <% if(review.images && review.images.length > 0) { %>
+                    <div class="review-images">
+                      <div class="row g-2">
+                        <% review.images.forEach(function(image) { %>
+                        <div class="col-auto">
+                          <img
+                            src="<%= image %>"
+                            alt="Review image"
+                            class="img-thumbnail review-image"
+                            style="
+                              width: 100px;
+                              height: 100px;
+                              object-fit: cover;
+                              cursor: pointer;
+                            "
+                          />
+                        </div>
+                        <% }) %>
+                      </div>
+                    </div>
+                    <% } %>
+                  </div>
+                </div>
+                <% }) %> <% } else { %>
+                <div class="text-center py-5">
+                  <i
+                    class="fas fa-comments text-muted mb-3"
+                    style="font-size: 48px"
+                  ></i>
+                  <p class="text-muted">
+                    No reviews yet. Be the first to review this product!
+                  </p>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Related Products Section -->
     <section class="untree_co-section related-products-slider">
       <div class="container">
@@ -152,7 +355,7 @@
                 src="<%= relatedProduct.imageUrl %>"
                 class="img-fluid product-thumbnail"
               />
-              <h3><%= relatedProduct.name %></h3>
+              <h5><%= relatedProduct.name %></h5>
               <strong class="product-price">
                 <%= new Intl.NumberFormat('en-EN', { style: 'currency',
                 currency: 'USD' }).format(relatedProduct.price) %>
@@ -177,6 +380,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="/js/tiny-slider.js"></script>
     <script src="/js/custom.js"></script>
+    <script src="/js/detail.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
   </body>

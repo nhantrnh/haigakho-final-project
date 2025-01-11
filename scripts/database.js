@@ -10,22 +10,37 @@ const Review = require("../models/Review");
 async function autoCreateCollections() {
   try {
     // Kết nối đến MongoDB
-    await mongoose.connect('mongodb+srv://haigakho:haigakho@hcmus.iiqtx.mongodb.net/hagako-web?retryWrites=true&w=majority&appName=HCMUS', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(
+      "mongodb+srv://haigakho:haigakho@hcmus.iiqtx.mongodb.net/hagako-web?retryWrites=true&w=majority&appName=HCMUS",
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
 
     // Danh sách các model cần kiểm tra và tạo collection
-    const models = [Category, Product, SubCategory, User, Order, OrderDetail, Review];
+    const models = [
+      Category,
+      Product,
+      SubCategory,
+      User,
+      Order,
+      OrderDetail,
+      Review,
+    ];
 
     // Lấy danh sách các collection hiện tại trong database
-    const existingCollections = await mongoose.connection.db.listCollections().toArray();
-    const existingCollectionNames = existingCollections.map(collection => collection.name);
+    const existingCollections = await mongoose.connection.db
+      .listCollections()
+      .toArray();
+    const existingCollectionNames = existingCollections.map(
+      (collection) => collection.name
+    );
 
     // Kiểm tra và tạo collection cho mỗi model
     for (const model of models) {
       const collectionName = model.collection.collectionName;
-      
+
       if (existingCollectionNames.includes(collectionName)) {
         console.log(`Collection "${collectionName}" đã tồn tại.`);
       } else {
@@ -33,7 +48,10 @@ async function autoCreateCollections() {
           await model.init();
           console.log(`Collection "${collectionName}" đã được tạo.`);
         } catch (err) {
-          console.error(`Lỗi khi tạo collection "${model.modelName}":`, err.message);
+          console.error(
+            `Lỗi khi tạo collection "${model.modelName}":`,
+            err.message
+          );
         }
       }
     }

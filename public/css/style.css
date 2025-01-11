@@ -741,7 +741,7 @@ a.more {
   color: #3b5d50;
 }
 .footer-section .subscription-form .form-control {
-  height: 50px;
+  height: 100%;
   border-radius: 10px;
   font-family: "Inter", sans-serif;
 }
@@ -964,7 +964,6 @@ textarea {
 }
 
 .product-name {
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: all 0.3s ease;
@@ -1351,8 +1350,8 @@ p {
 .cart-sidebar {
   position: fixed;
   top: 0;
-  right: -300px; /* Bắt đầu ngoài màn hình */
-  width: 300px;
+  right: -400px; /* Bắt đầu ngoài màn hình */
+  width: 400px;
   height: 100%;
   background-color: white;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
@@ -1484,9 +1483,6 @@ p {
   border-top: 1px solid #ddd;
 }
 
-.btn-primary {
-  width: 100%;
-}
 .cart-icon-container {
   position: relative; /* Đặt container để sử dụng vị trí tương đối */
   display: inline-block;
@@ -1548,4 +1544,26 @@ p {
 .specs-table td:first-child {
   font-weight: 600;
   width: 30%;
+}
+
+/* Filter Button */
+.filter-btn {
+  border-radius: 10px;
+}
+
+/* Sort Select */
+
+.sortSelect {
+  height: 100%;
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: white;
+  cursor: pointer;
+}
+
+.sortSelect:focus {
+  border-color: #3b5d50;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(59, 93, 80, 0.25);
 }

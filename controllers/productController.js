@@ -1,6 +1,7 @@
 // controllers/productController.js
 const Product = require("../models/Product");
 const Category = require("../models/Category");
+const Review = require("../models/Review");
 const {
   buildSearchFilter,
   buildCategoryFilter,
@@ -48,9 +49,28 @@ const renderTemplate = (res, template, data) => {
 // Main controller function
 exports.getProducts = async (req, res) => {
   try {
-    const { keyword, category, material, brand, priceRange } = req.query;
+    const { keyword, category, material, brand, priceRange, sort } = req.query;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * ITEMS_PER_PAGE;
+
+    // Build sort options
+    let sortOptions = {};
+    if (sort) {
+      switch (sort) {
+        case "price-asc":
+          sortOptions = { price: 1 };
+          break;
+        case "price-desc":
+          sortOptions = { price: -1 };
+          break;
+        case "newest":
+          sortOptions = { createdAt: -1 };
+          break;
+        case "oldest":
+          sortOptions = { createdAt: 1 };
+          break;
+      }
+    }
 
     // Build filter
     const filterComponents = await Promise.all([
@@ -71,6 +91,7 @@ exports.getProducts = async (req, res) => {
         Product.countDocuments(filter),
         Product.find(filter)
           .populate("categoryId", "name")
+          .sort(sortOptions)
           .skip(skip)
           .limit(ITEMS_PER_PAGE),
       ]);
@@ -140,7 +161,12 @@ exports.getProductDetail = async (req, res) => {
       .limit(4) // Show max 4 related products
       .populate("categoryId", "name");
 
-    res.render("products/detail", { product, relatedProducts });
+    const reviews = await Review.find({ productId: req.params.id }).populate(
+      "userId",
+      "name avatar"
+    );
+
+    res.render("products/detail", { product, relatedProducts, reviews });
   } catch (error) {
     console.error("Error:", error); // Thêm log
     res.status(500).send("Lỗi server");
