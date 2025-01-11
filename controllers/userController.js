@@ -11,7 +11,7 @@ exports.signup = async (req, res) => {
   try {
     const user = new User(req.body);
     await user.save();
-    res.status(201).json({ message: "Đăng ký thành công" });
+    res.status(201).json({ message: "Registration successful" });
   } catch (error) {
     if (error.name === "ValidationError") {
       return res.status(400).json({
@@ -20,7 +20,7 @@ exports.signup = async (req, res) => {
     }
     if (error.code === 11000) {
       return res.status(400).json({
-        message: "Username hoặc email đã tồn tại",
+        message: "Username or email already exists",
       });
     }
     res.status(500).json({ message: error.message });
@@ -40,7 +40,7 @@ exports.signin = (req, res, next) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: info.message || "Thông tin đăng nhập không chính xác",
+        message: info.message || "Incorrect login information",
       });
     }
 
@@ -51,7 +51,7 @@ exports.signin = (req, res, next) => {
 
       return res.status(200).json({
         success: true,
-        message: "Đăng nhập thành công",
+        message: "Login successful",
         user: {
           id: user._id,
           username: user.username,
@@ -67,13 +67,13 @@ exports.signout = (req, res) => {
     if (err) {
       return res.status(500).json({
         success: false,
-        message: "Có lỗi khi đăng xuất",
+        message: "Error logging out",
       });
     }
     req.session.destroy();
     res.status(200).json({
       success: true,
-      message: "Đăng xuất thành công",
+      message: "Logout successful",
     });
   });
 };
@@ -82,7 +82,7 @@ exports.signout = (req, res) => {
 exports.getProfile = (req, res) => {
   res.render("users/profile", {
     user: req.user,
-    title: "Thông tin tài khoản",
+    title: "Account information",
     page: "profile",
   });
 };
@@ -90,7 +90,7 @@ exports.getProfile = (req, res) => {
 exports.getSettings = (req, res) => {
   res.render("users/settings", {
     user: req.user,
-    title: "Cài đặt tài khoản",
+    title: "Account settings",
     page: "settings",
   });
 };
@@ -110,7 +110,7 @@ exports.updateSettings = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Cập nhật thành công",
+      message: "Update successful",
       user,
     });
   } catch (error) {
@@ -124,7 +124,7 @@ exports.updateSettings = async (req, res) => {
 exports.getOrders = async (req, res) => {
   res.render("users/orders", {
     user: req.user,
-    title: "Đơn hàng của tôi",
+    title: "My order",
     page: "orders",
   });
 };
@@ -132,7 +132,7 @@ exports.getOrders = async (req, res) => {
 exports.getUpdateProfile = (req, res) => {
   res.render("users/update", {
     user: req.user,
-    title: "Thông tin tài khoản",
+    title: "Account information",
     page: "update",
   });
 };

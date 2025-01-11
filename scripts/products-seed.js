@@ -10,25 +10,15 @@ mongoose.connect(
 
 async function updateProducts() {
   try {
-    // Example: Update a specific product by name
-    await Product.updateOne(
-      { name: "Erin Armchair" },
-      {
-        $set: {
-          price: 499.0,
-          description: "Updated description...",
-          // Add other fields to update
-        },
-      }
-    );
-
-    // Example: Update multiple products matching a condition
+    // update ratings field
     await Product.updateMany(
-      { categoryId: "673bf03378dc2d50619a2945" }, // Chair category
+      {},
       {
         $set: {
-          discount: 10,
-          // Add other common updates
+          ratings: {
+            average: 0,
+            count: 0,
+          },
         },
       }
     );
@@ -1366,5 +1356,5 @@ const seedDatabase = async () => {
   }
 };
 
-//updateProducts();
-seedDatabase();
+updateProducts();
+//seedDatabase();
