@@ -46,4 +46,12 @@ router.post(
   reviewController.addReview
 );
 
+router.get("/status/:productId", isAuthenticated, reviewController.checkStatus);
+
+router.delete(
+  "/delete/:reviewId",
+  isAuthenticated,
+  reviewController.deleteReview
+);
+
 module.exports = router;

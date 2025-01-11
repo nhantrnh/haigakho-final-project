@@ -20,11 +20,7 @@
 
         <div class="profile-card">
           <div class="profile-header">
-            <img
-              src="<%= user.avatar %>" 
-              alt="Avatar"
-              class="profile-avatar"
-            />
+            <img src="<%= user.avatar %>" alt="Avatar" class="profile-avatar" />
             <h2><%= user.username %></h2>
           </div>
 
@@ -43,7 +39,9 @@
           </div>
 
           <div class="profile-actions">
-            <a href="/settings" class="btn btn-primary">Chỉnh sửa thông tin</a>
+            <a href="/profile/update" class="btn btn-primary"
+              >Chỉnh sửa thông tin</a
+            >
             <a href="/orders" class="btn btn-secondary">Xem đơn hàng</a>
           </div>
         </div>
