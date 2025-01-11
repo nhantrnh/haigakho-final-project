@@ -174,3 +174,36 @@
   top: 50%;
   transform: translateY(-50%);
 }
+
+/* Add reviews */
+
+.rating-input {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.rating-input input {
+  display: none;
+}
+
+.rating-input label {
+  font-size: 25px;
+  color: #ddd;
+  cursor: pointer;
+  margin: 0 2px;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input:checked ~ label {
+  color: #ffd700;
+}
+
+.review-images img {
+  transition: transform 0.2s;
+}
+
+.review-images img:hover {
+  transform: scale(1.1);
+}

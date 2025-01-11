@@ -189,7 +189,75 @@
                 </div>
               </div>
 
-              <!-- Reviews List -->
+              <!-- Add review -->
+              <% if (user) { %>
+              <div class="add-review-section mt-4 p-4 border rounded">
+                <h4>Write a Review</h4>
+                <form id="reviewForm" class="mt-3">
+                  <input
+                    type="hidden"
+                    name="productId"
+                    value="<%= product._id %>"
+                  />
+
+                  <!-- Rating -->
+                  <div class="form-group mb-3">
+                    <label>Your Rating</label>
+                    <div class="rating-input">
+                      <% for(let i = 5; i >= 1; i--) { %>
+                      <input
+                        type="radio"
+                        id="star<%= i %>"
+                        name="rating"
+                        value="<%= i %>"
+                        required
+                      />
+                      <label for="star<%= i %>" class="star">★</label>
+                      <% } %>
+                    </div>
+                  </div>
+
+                  <!-- Review Content -->
+                  <div class="form-group mb-3">
+                    <label for="reviewContent">Your Review</label>
+                    <textarea
+                      class="form-control"
+                      id="reviewContent"
+                      name="content"
+                      rows="3"
+                      required
+                      placeholder="Share your thoughts about this product..."
+                    ></textarea>
+                  </div>
+
+                  <!-- Image Upload -->
+                  <div class="form-group mb-3">
+                    <label>Add Photos (optional)</label>
+                    <input
+                      type="file"
+                      class="form-control"
+                      name="images"
+                      multiple
+                      accept="image/*"
+                      disabled
+                    />
+                    <small class="text-danger"
+                      >Uploading images is temporarily disabled. Please try
+                      again later.</small
+                    >
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">
+                    Submit Review
+                  </button>
+                </form>
+              </div>
+              <% } else { %>
+              <div class="text-center py-3">
+                <p>Please <a href="/signin">sign in</a> to write a review</p>
+              </div>
+              <% } %>
+
               <!-- Reviews List -->
               <div class="reviews-list">
                 <% if(reviews.length > 0) { %> <%
