@@ -1,6 +1,7 @@
 // controllers/productController.js
 const Product = require("../models/Product");
 const Category = require("../models/Category");
+const Review = require("../models/Review");
 const {
   buildSearchFilter,
   buildCategoryFilter,
@@ -160,7 +161,12 @@ exports.getProductDetail = async (req, res) => {
       .limit(4) // Show max 4 related products
       .populate("categoryId", "name");
 
-    res.render("products/detail", { product, relatedProducts });
+    const reviews = await Review.find({ productId: req.params.id }).populate(
+      "userId",
+      "name avatar"
+    );
+
+    res.render("products/detail", { product, relatedProducts, reviews });
   } catch (error) {
     console.error("Error:", error); // Thêm log
     res.status(500).send("Lỗi server");

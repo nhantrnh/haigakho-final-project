@@ -110,3 +110,67 @@
 }
 
 /* End Product Detail Style */
+
+/* Add to existing CSS */
+
+.product-reviews-section {
+  padding: 1rem 0 1rem 0 !important;
+}
+
+.rating-overview {
+  border: 1px solid #eee;
+}
+
+.rating-average {
+  font-size: 48px;
+  color: #222;
+  font-weight: bold;
+}
+
+.stars {
+  font-size: 14px;
+}
+
+.rating-bar {
+  font-size: 13px;
+}
+
+.review-item {
+  transition: all 0.3s ease;
+}
+
+.review-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reviewer-info .avatar img {
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-images img.review-image:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+/* Image Modal Styles */
+.review-image-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+}
+
+.review-image-modal img {
+  max-width: 90%;
+  max-height: 90vh;
+  margin: auto;
+  display: block;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
