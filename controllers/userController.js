@@ -78,6 +78,30 @@ exports.signout = (req, res) => {
   });
 };
 
+// controllers/userController.js
+exports.checkAvailability = async (req, res) => {
+  try {
+    const { field, value } = req.query;
+
+    // Build query based on field
+    const query = { [field]: value };
+
+    // Check if username/email exists
+    const exists = await User.findOne(query);
+
+    res.json({
+      available: !exists,
+      message: exists
+        ? `This ${field} is already taken`
+        : `This ${field} is available`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+};
+
 // Thêm các methods mới
 exports.getProfile = (req, res) => {
   res.render("users/profile", {

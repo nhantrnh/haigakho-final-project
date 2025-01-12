@@ -2059,3 +2059,17 @@ p {
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(59, 93, 80, 0.25);
 }
+
+.feedback {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  min-height: 20px;
+}
+
+.feedback.text-success {
+  color: #198754;
+}
+
+.feedback.text-danger {
+  color: #dc3545;
+}
