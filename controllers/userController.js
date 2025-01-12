@@ -95,26 +95,40 @@ exports.getSettings = (req, res) => {
   });
 };
 
-exports.updateSettings = async (req, res) => {
+exports.updatePassword = async (req, res) => {
   try {
-    const updates = {
-      email: req.body.email,
-      // Thêm các trường cần update
-    };
+    const { currentPassword, newPassword, confirmPassword } = req.body;
 
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      { $set: updates },
-      { new: true, runValidators: true }
-    );
+    // Validate new password match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password does not match",
+      });
+    }
 
-    res.status(200).json({
+    // Get current user
+    const user = await User.findById(req.user._id);
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
       success: true,
-      message: "Update successful",
-      user,
+      message: "Password updated successfully",
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       message: error.message,
     });

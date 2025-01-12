@@ -14,7 +14,7 @@ module.exports = function (passport) {
           const user = await User.findOne({ username: username });
 
           if (!user) {
-            return done(null, false, { message: "Không tìm thấy tài khoản" });
+            return done(null, false, { message: "Account not found" });
           }
 
           // Kiểm tra password
@@ -23,7 +23,7 @@ module.exports = function (passport) {
           if (isMatch) {
             return done(null, user);
           } else {
-            return done(null, false, { message: "Mật khẩu không đúng" });
+            return done(null, false, { message: "Incorrect password" });
           }
         } catch (err) {
           return done(err);
