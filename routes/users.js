@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const { upload } = require("../config/cloudinary");
 // New protected routes
 router.get("/profile", isAuthenticated, userController.getProfile);
 router.get("/settings", isAuthenticated, userController.getSettings);

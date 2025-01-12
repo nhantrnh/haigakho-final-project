@@ -17,6 +17,13 @@ $(document).ready(function () {
     e.preventDefault();
 
     const formData = new FormData(this);
+    const $submitBtn = $(this).find('button[type="submit"]');
+
+    $submitBtn
+      .prop("disabled", true)
+      .html(
+        '<span class="spinner-border spinner-border-sm me-2"></span>Đang cập nhật...'
+      );
 
     $.ajax({
       url: "/profile/update",
