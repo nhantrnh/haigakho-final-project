@@ -25,12 +25,13 @@ $(document).ready(function () {
       data: JSON.stringify(formData),
       success: function (response) {
         // Show success message
-        showAlert("success", "Registration successful! Redirecting...");
+        //showAlert("success", "Registration successful! Redirecting...");
+        showAlert("success", response.message);
 
         // Redirect to login page after delay
-        setTimeout(() => {
-          window.location.href = "/signin";
-        }, 1500);
+        // setTimeout(() => {
+        //   window.location.href = "/signin";
+        // }, 1500);
       },
       error: function (xhr) {
         // Show error message

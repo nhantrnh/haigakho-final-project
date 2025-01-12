@@ -2,6 +2,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
+const crypto = require("crypto");
+const emailService = require("../helpers/emailHelper");
 
 exports.getSignUp = (req, res) => {
   res.render("users/signup");
@@ -9,9 +11,24 @@ exports.getSignUp = (req, res) => {
 
 exports.signup = async (req, res) => {
   try {
-    const user = new User(req.body);
+    // Generate activation token
+    const activationToken = crypto.randomBytes(32).toString("hex");
+
+    const user = new User({
+      ...req.body,
+      activationToken,
+      activationExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    });
+
     await user.save();
-    res.status(201).json({ message: "Registration successful" });
+
+    // Send activation email
+    await emailService.sendActivationEmail(user, activationToken);
+
+    res.status(201).json({
+      message:
+        "Registration successful. Please check your email to activate your account.",
+    });
   } catch (error) {
     if (error.name === "ValidationError") {
       return res.status(400).json({
@@ -41,6 +58,13 @@ exports.signin = (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: info.message || "Incorrect login information",
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: "Please activate your account first. Check your email.",
       });
     }
 
@@ -207,6 +231,33 @@ exports.updateProfile = async (req, res) => {
     res.status(400).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+// filepath: controllers/userController.js
+exports.activateAccount = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      activationToken: req.params.token,
+      activationExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).render("partials/activation-error", {
+        message: "Invalid or expired activation link",
+      });
+    }
+
+    user.isActive = true;
+    user.activationToken = undefined;
+    user.activationExpires = undefined;
+    await user.save();
+
+    res.render("partials/activation-success");
+  } catch (error) {
+    res.status(500).render("partials/activation-error", {
+      message: "Error activating account",
     });
   }
 };

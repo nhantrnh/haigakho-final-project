@@ -16,6 +16,8 @@ router.get("/signout", isAuthenticated, userController.signout);
 
 router.get("/check-availability", userController.checkAvailability);
 
+router.get("/activate/:token", userController.activateAccount);
+
 const { upload } = require("../config/cloudinary");
 // New protected routes
 router.get("/profile", isAuthenticated, userController.getProfile);
