@@ -14,22 +14,15 @@ router.post("/signin", isGuest, userController.signin);
 
 router.get("/signout", isAuthenticated, userController.signout);
 
-// Configure multer storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/avatars/"); // Make sure this directory exists
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, "avatar-" + uniqueSuffix + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage: storage });
+const { upload } = require("../config/cloudinary");
 // New protected routes
 router.get("/profile", isAuthenticated, userController.getProfile);
 router.get("/settings", isAuthenticated, userController.getSettings);
-router.post("/settings/update", isAuthenticated, userController.updateSettings);
+router.post(
+  "/settings/password/update",
+  isAuthenticated,
+  userController.updatePassword
+);
 router.get("/orders", isAuthenticated, userController.getOrders);
 router.get("/profile/update", isAuthenticated, userController.getUpdateProfile);
 router.post(

@@ -23,7 +23,7 @@ module.exports = {
     }
     res.status(401).json({
       success: false,
-      message: "Vui lòng đăng nhập để tiếp tục",
+      message: "Please login to continue",
     });
   },
 };

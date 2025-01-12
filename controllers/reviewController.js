@@ -100,3 +100,57 @@ exports.deleteReview = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+// controllers/reviewController.js
+exports.getProductReviews = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5; // Reviews per page
+    const productId = req.params.productId;
+
+    const skip = (page - 1) * limit;
+
+    const [reviews, total] = await Promise.all([
+      Review.find({ productId })
+        .populate("userId", "name avatar")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Review.countDocuments({ productId }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    const pagination = {
+      page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
+
+    // Render view nhưng không gửi ngay
+    res.render(
+      "partials/review-list",
+      { reviews, pagination, layout: false },
+      (err, reviewsHTML) => {
+        if (err) {
+          return res.status(500).json({
+            success: false,
+            error: err.message,
+          });
+        }
+
+        res.json({
+          success: true,
+          reviewsHTML,
+          pagination,
+        });
+      }
+    );
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};

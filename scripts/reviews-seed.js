@@ -61,13 +61,70 @@ const seedDatabase = async () => {
 
     const reviews = [
       {
-        productId: products[1]._id,
+        productId: products[0]._id,
         userId: users[0]._id,
-        content: "Best product ever!",
+        content: "Sản phẩm rất tốt, chất lượng vượt trội.",
         rating: 5,
-        images: [
-          "https://upload.wikimedia.org/wikipedia/commons/f/f9/Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg",
-        ],
+      },
+      {
+        productId: products[0]._id,
+        userId: users[1]._id,
+        content: "Giá cả hợp lý, đáng để mua.",
+        rating: 4,
+      },
+      {
+        productId: products[0]._id,
+        userId: users[0]._id,
+        content: "Không hài lòng với chất lượng sản phẩm.",
+        rating: 2,
+      },
+      {
+        productId: products[0]._id,
+        userId: users[1]._id,
+        content: "Dịch vụ khách hàng rất tốt.",
+        rating: 5,
+      },
+      {
+        productId: products[0]._id,
+        userId: users[0]._id,
+        content: "Sản phẩm không như mong đợi.",
+        rating: 3,
+      },
+      {
+        productId: products[0]._id,
+        userId: users[1]._id,
+        content: "Giao hàng nhanh chóng, sản phẩm tốt.",
+        rating: 4,
+      },
+      {
+        productId: products[0]._id,
+        userId: users[0]._id,
+        content: "Chất lượng sản phẩm kém.",
+        rating: 1,
+      },
+      {
+        productId: products[0]._id,
+        userId: users[1]._id,
+        content: "Sản phẩm rất đáng tiền.",
+        rating: 5,
+      },
+      {
+        productId: products[0]._id,
+        userId: users[0]._id,
+        content: "Không hài lòng với dịch vụ.",
+        rating: 2,
+      },
+      {
+        productId: products[0]._id,
+        userId: users[1]._id,
+        content: "Sản phẩm tốt, sẽ mua lại.",
+        rating: 4,
+      },
+      {
+        productId: products[0]._id,
+        userId: users[0]._id,
+        content: "Chất lượng sản phẩm tuyệt vời.",
+        rating: 5,
       },
     ];
 
