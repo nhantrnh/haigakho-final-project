@@ -134,20 +134,32 @@ $(document).ready(function () {
     cart.forEach(function (item) {
       var productHtml = `
         <li class="cart-item" data-product-id="${item.productId}">
-          <img src="${item.imageUrl}" class="cart-item-image" alt="${item.name}" />
+          <img src="${item.imageUrl}" class="cart-item-image" alt="${
+        item.name
+      }" />
           <div class="cart-item-details">
-            <p>${item.name}</p>
-            <p>Price: $${item.price}</p>
-            <p>
-              Quantity: 
-              <button class="decrease-qty">-</button>
-              <span class="cart-item-quantity">${item.quantity}</span>
-              <button class="increase-qty">+</button>
+            <h5 class="cart-item-name">${item.name}</h5>
+            <p class="cart-item-price"> 
+              <span>$${item.price}</span>
+              <del>$${item.price * 2}</del>
             </p>
-            <button class="remove-item">
-              <i class="fa fa-trash"></i>
-            </button>
+            <div class = "quantity-controls">
+              <button class="decrease-qty quantity-btn">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+
+              <span class="cart-item-quantity cart-quantity-value">${
+                item.quantity
+              }</span>
+              
+              <button class="increase-qty quantity-btn">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div> 
           </div>
+          <button class="remove-item" aria-label="Remove item">
+            <i class="fa-regular fa-trash-can fa-lg"></i>
+          </button>
         </li>
       `;
       cartItems.append(productHtml);
