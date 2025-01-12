@@ -82,6 +82,73 @@ $(document).ready(function () {
     });
   });
 
+  // Handle forgot password form submission
+  $("#forgotPasswordForm").on("submit", function (e) {
+    e.preventDefault();
+    const email = $("#email").val();
+    const $submitBtn = $(this).find('button[type="submit"]');
+
+    $submitBtn
+      .prop("disabled", true)
+      .html(
+        '<span class="spinner-border spinner-border-sm me-2"></span>Sending...'
+      );
+
+    $.ajax({
+      url: "/forgot-password",
+      type: "POST",
+      data: JSON.stringify({ email }),
+      contentType: "application/json",
+      success: function (response) {
+        showAlert("success", response.message);
+      },
+      error: function (xhr) {
+        console.log(xhr.responseJSON.message);
+        showAlert("danger", xhr.responseJSON.message);
+      },
+      complete: function () {
+        $submitBtn.prop("disabled", false).html("Send Reset Link");
+      },
+    });
+  });
+
+  // Handle reset password form submission
+  $("#resetPasswordForm").on("submit", function (e) {
+    e.preventDefault();
+    const password = $("#password").val();
+    const confirmPassword = $("#confirmPassword").val();
+
+    if (password !== confirmPassword) {
+      return showAlert("danger", "Passwords do not match");
+    }
+
+    const token = window.location.pathname.split("/").pop();
+    const $submitBtn = $(this).find('button[type="submit"]');
+
+    $submitBtn
+      .prop("disabled", true)
+      .html(
+        '<span class="spinner-border spinner-border-sm me-2"></span>Resetting...'
+      );
+
+    $.ajax({
+      url: `/reset-password/${token}`,
+      type: "POST",
+      data: JSON.stringify({ password }),
+      contentType: "application/json",
+      success: function (response) {
+        showAlert("success", response.message);
+        setTimeout(() => (window.location.href = "/signin"), 2000);
+      },
+      error: function (xhr) {
+        showAlert("danger", xhr.responseJSON.message);
+      },
+      complete: function () {
+        $submitBtn.prop("disabled", false).html("Reset Password");
+      },
+    });
+  });
+
   // Helper function to show alerts
   function showAlert(type, message) {
     const alertHtml = `

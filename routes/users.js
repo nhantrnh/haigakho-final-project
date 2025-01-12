@@ -18,6 +18,11 @@ router.get("/check-availability", userController.checkAvailability);
 
 router.get("/activate/:token", userController.activateAccount);
 
+router.get("/forgot-password", userController.getForgotPassword);
+router.post("/forgot-password", userController.forgotPassword);
+router.get("/reset-password/:token", userController.getResetPassword);
+router.post("/reset-password/:token", userController.resetPassword);
+
 const { upload } = require("../config/cloudinary");
 // New protected routes
 router.get("/profile", isAuthenticated, userController.getProfile);

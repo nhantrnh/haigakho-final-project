@@ -25,3 +25,22 @@ exports.sendActivationEmail = async (user, token) => {
 
   return transporter.sendMail(mailOptions);
 };
+
+exports.sendResetPasswordEmail = async (user, token) => {
+  const resetUrl = `${process.env.BASE_URL}/reset-password/${token}`;
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: user.email,
+    subject: "Reset Your Password",
+    html: `
+        <h1>Password Reset Request</h1>
+        <p>Click the link below to reset your password:</p>
+        <a href="${resetUrl}">${resetUrl}</a>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `,
+  };
+
+  return transporter.sendMail(mailOptions);
+};

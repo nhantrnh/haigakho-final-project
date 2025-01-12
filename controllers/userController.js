@@ -3,7 +3,8 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const crypto = require("crypto");
-const emailService = require("../helpers/emailHelper");
+const emailHelper = require("../helpers/emailHelper");
+const { stat } = require("fs");
 
 exports.getSignUp = (req, res) => {
   res.render("users/signup");
@@ -23,7 +24,7 @@ exports.signup = async (req, res) => {
     await user.save();
 
     // Send activation email
-    await emailService.sendActivationEmail(user, activationToken);
+    await emailHelper.sendActivationEmail(user, activationToken);
 
     res.status(201).json({
       message:
@@ -123,6 +124,80 @@ exports.checkAvailability = async (req, res) => {
     res.status(500).json({
       error: error.message,
     });
+  }
+};
+
+exports.getForgotPassword = (req, res) => {
+  res.render("users/forgot-password");
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(404).json({ message: "No account with that email" });
+    }
+
+    if (!user.isActive) {
+      return res
+        .status(400)
+        .json({ message: "Please activate your account first" });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    // Send email
+    await emailHelper.sendResetPasswordEmail(user, resetToken);
+
+    res.json({ message: "Password reset email sent" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getResetPassword = async (req, res) => {
+  const user = await User.findOne({
+    resetPasswordToken: req.params.token,
+    resetPasswordExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return res.render("error", {
+      status: 400,
+      message: "Invalid or expired reset token",
+      description:
+        "Please check your email for the reset link or request a new one",
+    });
+  }
+
+  res.render("users/reset-password", { token: req.params.token });
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: req.params.token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired reset token" });
+    }
+
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Password has been reset" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
