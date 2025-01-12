@@ -60,3 +60,60 @@ $(document).ready(function () {
     });
   });
 });
+
+// public/js/detail.js
+$(document).ready(function () {
+  // Load reviews function
+  function loadReviews(page = 1) {
+    const productId = $("#productDetailSection").data("product-id");
+
+    $.ajax({
+      url: `/reviews/product/${productId}?page=${page}`,
+      type: "GET",
+      beforeSend: function () {
+        $(".reviews-list").addClass("loading");
+      },
+      success: function (response) {
+        if (response.success) {
+          $(".reviews-list").html(response.reviewsHTML);
+        }
+      },
+      error: function (err) {
+        console.error("Error loading reviews:", err);
+      },
+      complete: function () {
+        $(".reviews-list").removeClass("loading");
+      },
+    });
+  }
+
+  // Handle pagination clicks
+  $(document).on(
+    "click",
+    ".reviews-pagination button:not(.disabled)",
+    function () {
+      const page = $(this).data("page");
+      showLoading();
+      loadReviews(page);
+
+      // Scroll to reviews section
+      $("html, body").animate(
+        {
+          scrollTop: $(".reviews-list").offset().top - 100,
+        },
+        500
+      );
+      hideLoading();
+    }
+  );
+
+  loadReviews(1);
+});
+
+function showLoading() {
+  $("#review-loading-overlay").fadeIn(200);
+}
+
+function hideLoading() {
+  $("#review-loading-overlay").fadeOut(200);
+}

@@ -54,4 +54,7 @@ router.delete(
   reviewController.deleteReview
 );
 
+// routes/reviews.js
+router.get("/product/:productId", reviewController.getProductReviews);
+
 module.exports = router;
