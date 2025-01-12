@@ -14,6 +14,8 @@ router.post("/signin", isGuest, userController.signin);
 
 router.get("/signout", isAuthenticated, userController.signout);
 
+router.get("/check-availability", userController.checkAvailability);
+
 const { upload } = require("../config/cloudinary");
 // New protected routes
 router.get("/profile", isAuthenticated, userController.getProfile);

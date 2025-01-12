@@ -112,8 +112,10 @@
 </nav>
 <div id="cartSidebar" class="cart-sidebar">
   <div class="cart-header">
-    <h4>Giỏ hàng</h4>
-    <button class="close-btn" onclick="toggleCartSidebar()">X</button>
+    <h4>Cart</h4>
+    <button class="close-btn" onclick="toggleCartSidebar()">
+      <i class="fas fa-times"></i>
+    </button>
   </div>
   <ul id="cart-items">
     <!-- Các sản phẩm trong giỏ hàng sẽ được hiển thị ở đây -->
@@ -123,6 +125,6 @@
     <p>Total price: $<span id="cart-total">0.00</span></p>
   </div>
   <div class="cart-footer text-center">
-    <a href="/cart" class="btn btn-primary">Thanh toán</a>
+    <a href="/cart" class="btn btn-primary">Checkout</a>
   </div>
 </div>
