@@ -8,15 +8,31 @@ cloudinary.config({
   api_secret: "J4Gwo2f87uuJmKrLLE0tIx3an-0",
 });
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+// Storage config for different types
+const avatarStorage = new CloudinaryStorage({
+  cloudinary,
   params: {
-    folder: "avatars",
+    folder: "haigakho/users/avatars",
     allowed_formats: ["jpg", "png", "jpeg"],
     transformation: [{ width: 500, height: 500, crop: "limit" }],
   },
 });
 
-const upload = multer({ storage: storage });
+const productStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "haigakho/products",
+    allowed_formats: ["jpg", "png", "jpeg"],
+    transformation: [{ width: 800, height: 800, crop: "limit" }],
+  },
+});
 
-module.exports = { upload, cloudinary };
+// Create multer instances
+const uploadAvatar = multer({ storage: avatarStorage });
+const uploadProduct = multer({ storage: productStorage });
+
+module.exports = {
+  cloudinary,
+  uploadAvatar,
+  uploadProduct,
+};
