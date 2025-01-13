@@ -2,6 +2,9 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
+const crypto = require("crypto");
+const emailHelper = require("../helpers/emailHelper");
+const { stat } = require("fs");
 
 exports.getSignUp = (req, res) => {
   res.render("users/signup");
@@ -9,9 +12,24 @@ exports.getSignUp = (req, res) => {
 
 exports.signup = async (req, res) => {
   try {
-    const user = new User(req.body);
+    // Generate activation token
+    const activationToken = crypto.randomBytes(32).toString("hex");
+
+    const user = new User({
+      ...req.body,
+      activationToken,
+      activationExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    });
+
     await user.save();
-    res.status(201).json({ message: "Registration successful" });
+
+    // Send activation email
+    await emailHelper.sendActivationEmail(user, activationToken);
+
+    res.status(201).json({
+      message:
+        "Registration successful. Please check your email to activate your account.",
+    });
   } catch (error) {
     if (error.name === "ValidationError") {
       return res.status(400).json({
@@ -41,6 +59,13 @@ exports.signin = (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: info.message || "Incorrect login information",
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: "Please activate your account first. Check your email.",
       });
     }
 
@@ -99,6 +124,80 @@ exports.checkAvailability = async (req, res) => {
     res.status(500).json({
       error: error.message,
     });
+  }
+};
+
+exports.getForgotPassword = (req, res) => {
+  res.render("users/forgot-password");
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(404).json({ message: "No account with that email" });
+    }
+
+    if (!user.isActive) {
+      return res
+        .status(400)
+        .json({ message: "Please activate your account first" });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    // Send email
+    await emailHelper.sendResetPasswordEmail(user, resetToken);
+
+    res.json({ message: "Password reset email sent" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getResetPassword = async (req, res) => {
+  const user = await User.findOne({
+    resetPasswordToken: req.params.token,
+    resetPasswordExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return res.render("error", {
+      status: 400,
+      message: "Invalid or expired reset token",
+      description:
+        "Please check your email for the reset link or request a new one",
+    });
+  }
+
+  res.render("users/reset-password", { token: req.params.token });
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: req.params.token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired reset token" });
+    }
+
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Password has been reset" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -207,6 +306,33 @@ exports.updateProfile = async (req, res) => {
     res.status(400).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+// filepath: controllers/userController.js
+exports.activateAccount = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      activationToken: req.params.token,
+      activationExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).render("partials/activation-error", {
+        message: "Invalid or expired activation link",
+      });
+    }
+
+    user.isActive = true;
+    user.activationToken = undefined;
+    user.activationExpires = undefined;
+    await user.save();
+
+    res.render("partials/activation-success");
+  } catch (error) {
+    res.status(500).render("partials/activation-error", {
+      message: "Error activating account",
     });
   }
 };

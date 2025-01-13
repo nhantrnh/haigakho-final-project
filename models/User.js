@@ -41,6 +41,14 @@ const userSchema = new mongoose.Schema({
     enum: ["active", "inactive", "banned"],
     default: "active",
   },
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
+  activationToken: String,
+  activationExpires: Date,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   createdAt: {
     type: Date,
     default: Date.now,
