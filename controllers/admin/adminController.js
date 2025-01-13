@@ -270,3 +270,43 @@ exports.getProducts = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+exports.getProductsData = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const search = req.query.search || "";
+    const category = req.query.category || "";
+    const sortField = req.query.sort || "createdAt";
+    const sortOrder = req.query.order || "desc";
+
+    let query = {};
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+    if (category) {
+      query.categoryId = category;
+    }
+
+    const sortObj = {};
+    sortObj[sortField] = sortOrder === "asc" ? 1 : -1;
+
+    const products = await Product.find(query)
+      .populate("categoryId")
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort(sortObj);
+
+    const total = await Product.countDocuments(query);
+
+    res.json({
+      success: true,
+      products,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      total,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

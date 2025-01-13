@@ -56,5 +56,11 @@ router.delete(
 );
 
 router.get("/products", isAuthenticated, isAdmin, adminController.getProducts);
+router.get(
+  "/api/products",
+  isAuthenticated,
+  isAdmin,
+  adminController.getProductsData
+);
 
 module.exports = router;
