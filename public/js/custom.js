@@ -27,15 +27,31 @@
 // public/js/custom.js
 document.getElementById("signoutBtn")?.addEventListener("click", async (e) => {
   e.preventDefault();
+  // if (!confirm("Are you sure you want to sign out?")) {
+  //   return;
+  // }
+  const btn = e.target;
+  console.log(btn);
+
+  btn.innerHTML =
+    '<span class="spinner-border spinner-border-sm"></span> Signing out...';
+  btn.disabled = true;
   try {
     const response = await fetch("/signout", {
       method: "GET",
     });
     if (response.ok) {
-      window.location.href = "/";
+      // Show success message
+      alert("Logged out successfully!");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
     }
   } catch (error) {
     console.error("Signout error:", error);
+    btn.innerHTML = "Sign out";
+    btn.disabled = false;
+    alert("Error logging out");
   }
 });
 

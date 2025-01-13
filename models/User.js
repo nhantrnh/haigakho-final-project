@@ -39,11 +39,15 @@ const userSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["active", "inactive", "banned"],
-    default: "active",
+    default: "inactive",
   },
-  isActive: {
+  isEmailActive: {
     type: Boolean,
     default: false,
+  },
+  banReason: {
+    type: String,
+    default: null,
   },
   activationToken: String,
   activationExpires: Date,

@@ -1,0 +1,93 @@
+<div class="p-6">
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+          <i class="fas fa-shopping-bag fa-2x"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500">Total Orders</p>
+          <h3 class="text-2xl font-bold">2,651</h3>
+          <p class="text-sm text-green-500">+12.5%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-green-100 text-green-600">
+          <i class="fas fa-dollar-sign fa-2x"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500">Revenue</p>
+          <h3 class="text-2xl font-bold">$86,404</h3>
+          <p class="text-sm text-green-500">+8.2%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+          <i class="fas fa-users fa-2x"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500">Customers</p>
+          <h3 class="text-2xl font-bold">1,245</h3>
+          <p class="text-sm text-green-500">+5.2%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-red-100 text-red-600">
+          <i class="fas fa-box fa-2x"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500">Products</p>
+          <h3 class="text-2xl font-bold">450</h3>
+          <p class="text-sm text-green-500">+2.4%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <h3 class="text-lg font-semibold mb-4">Sales Overview</h3>
+      <canvas id="salesChart" width="400" height="200"></canvas>
+    </div>
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <h3 class="text-lg font-semibold mb-4">Top Products</h3>
+      <canvas id="productsChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Recent Orders Table -->
+  <div class="bg-white rounded-lg shadow-sm">
+    <div class="p-6">
+      <h3 class="text-lg font-semibold mb-4">Recent Orders</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr
+              class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              <th class="p-3">Order ID</th>
+              <th class="p-3">Customer</th>
+              <th class="p-3">Product</th>
+              <th class="p-3">Amount</th>
+              <th class="p-3">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <!-- Sample data rows -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

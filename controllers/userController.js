@@ -69,18 +69,30 @@ exports.signin = (req, res, next) => {
       });
     }
 
+    if (user.status === "banned") {
+      return res.status(403).json({
+        success: false,
+        message: `Your account has been banned. Reason: ${user.banReason}`,
+      });
+    }
+
     req.logIn(user, (err) => {
       if (err) {
         return next(err);
       }
 
+      // Check if user is admin and return appropriate redirect URL
+      const redirectUrl = user.role === "admin" ? "/admin" : "/";
+
       return res.status(200).json({
         success: true,
         message: "Login successful",
+        redirectUrl: redirectUrl,
         user: {
           id: user._id,
           username: user.username,
           email: user.email,
+          role: user.role,
         },
       });
     });
@@ -96,6 +108,7 @@ exports.signout = (req, res) => {
       });
     }
     req.session.destroy();
+    res.clearCookie("connect.sid"); // Clear session cookie
     res.status(200).json({
       success: true,
       message: "Logout successful",
@@ -325,6 +338,7 @@ exports.activateAccount = async (req, res) => {
     }
 
     user.isActive = true;
+    user.status = "active";
     user.activationToken = undefined;
     user.activationExpires = undefined;
     await user.save();

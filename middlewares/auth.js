@@ -26,4 +26,17 @@ module.exports = {
       message: "Please login to continue",
     });
   },
+
+  isAdmin: (req, res, next) => {
+    if (
+      req.user &&
+      (req.user.role === "admin" || req.user.role === "superadmin")
+    ) {
+      return next();
+    }
+    res.status(403).json({
+      success: false,
+      message: "Access denied",
+    });
+  },
 };

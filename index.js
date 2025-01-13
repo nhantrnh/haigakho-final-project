@@ -61,6 +61,7 @@ app.use("/shop", require("./routes/products"));
 app.use("/", require("./routes/users"));
 app.use("/", require("./routes/routes"));
 app.use("/reviews", require("./routes/reviews"));
+app.use("/admin", require("./routes/admin"));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
