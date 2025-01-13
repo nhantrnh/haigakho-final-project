@@ -69,7 +69,7 @@ $(document).ready(function () {
       success: function (response) {
         showAlert("success", "Login successful! Redirecting...");
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = response.redirectUrl;
         }, 1000);
       },
       error: function (xhr) {

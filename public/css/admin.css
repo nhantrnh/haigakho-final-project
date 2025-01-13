@@ -1,0 +1,44 @@
+.sidebar {
+  background: linear-gradient(180deg, #3b5d50 0%, #2f4a40 100%);
+  transition: all 0.3s ease;
+}
+
+.nav-link {
+  position: relative;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  margin: 5px 10px;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.nav-link.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-link.active::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 20px;
+  width: 4px;
+  background: #f9bf29;
+  border-radius: 0 4px 4px 0;
+}
+
+.nav-icon {
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover .nav-icon {
+  transform: scale(1.1);
+}
+
+.profile-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}

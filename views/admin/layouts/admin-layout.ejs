@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Haigakho</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/admin.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body class="bg-gray-100">
+    <div class="flex h-screen">
+      <!-- Improved Sidebar -->
+      <div class="w-64 sidebar text-white">
+        <div class="p-6">
+          <div class="flex items-center mb-8">
+            <img src="/images/logo.png" alt="Logo" class="h-10 w-auto mr-3" />
+            <span class="text-xl font-bold tracking-wider">Haigakho</span>
+          </div>
+
+          <nav class="space-y-1">
+            <a
+              href="/admin"
+              class="nav-link active flex items-center px-4 py-3 text-gray-100"
+            >
+              <i class="fas fa-chart-line nav-icon w-5 h-5 mr-3"></i>
+              <span>Dashboard</span>
+            </a>
+
+            <a
+              href="/admin/products"
+              class="nav-link flex items-center px-4 py-3 text-gray-100"
+            >
+              <i class="fas fa-boxes nav-icon w-5 h-5 mr-3"></i>
+              <span>Products</span>
+            </a>
+
+            <a
+              href="/admin/orders"
+              class="nav-link flex items-center px-4 py-3 text-gray-100"
+            >
+              <i class="fas fa-shopping-cart nav-icon w-5 h-5 mr-3"></i>
+              <span>Orders</span>
+            </a>
+
+            <a
+              href="/admin/users"
+              class="nav-link flex items-center px-4 py-3 text-gray-100"
+            >
+              <i class="fas fa-users nav-icon w-5 h-5 mr-3"></i>
+              <span>Users</span>
+            </a>
+
+            <a
+              href="/admin/categories"
+              class="nav-link flex items-center px-4 py-3 text-gray-100"
+            >
+              <i class="fas fa-tags nav-icon w-5 h-5 mr-3"></i>
+              <span>Categories</span>
+            </a>
+
+            <a
+              href="/admin/settings"
+              class="nav-link flex items-center px-4 py-3 text-gray-100"
+            >
+              <i class="fas fa-cog nav-icon w-5 h-5 mr-3"></i>
+              <span>Settings</span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="absolute bottom-0 w-64 profile-section">
+          <div class="p-4 flex items-center">
+            <img
+              src="https://ui-avatars.com/api/?name=Admin&background=f9bf29&color=3b5d50"
+              class="w-10 h-10 rounded-full ring-2 ring-[#f9bf29]"
+            />
+            <div class="ml-3">
+              <p class="text-sm font-medium">Admin User</p>
+              <a
+                href="/logout"
+                class="text-xs text-gray-300 hover:text-[#f9bf29] transition-colors"
+              >
+                Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex-1 overflow-y-auto">
+        <!-- Top Navigation -->
+        <div class="bg-white shadow-sm">
+          <div class="flex items-center justify-between p-4">
+            <div class="flex items-center space-x-4">
+              <button class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-bars"></i>
+              </button>
+              <h1 class="text-xl font-semibold"><%= title %></h1>
+            </div>
+            <div class="flex items-center space-x-4">
+              <button class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-bell"></i>
+              </button>
+              <button class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-cog"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page Content -->
+        <%- include('../pages/' + content) %>
+      </div>
+    </div>
+
+    <script src="/js/admin/admin.js"></script>
+  </body>
+</html>
