@@ -96,6 +96,7 @@ exports.signout = (req, res) => {
       });
     }
     req.session.destroy();
+    res.clearCookie("connect.sid"); // Clear session cookie
     res.status(200).json({
       success: true,
       message: "Logout successful",
