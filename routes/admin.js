@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const { isAuthenticated, isAdmin } = require("../middlewares/auth");
 const adminController = require("../controllers/admin/adminController");
+const { uploadProduct } = require("../config/cloudinary");
 
 router.get("/users", isAuthenticated, isAdmin, adminController.getUsers);
 
@@ -61,6 +62,20 @@ router.get(
   isAuthenticated,
   isAdmin,
   adminController.getProductsData
+);
+
+router.get(
+  "/products/create",
+  isAuthenticated,
+  isAdmin,
+  adminController.getCreateProduct
+);
+router.post(
+  "/products",
+  isAuthenticated,
+  isAdmin,
+  uploadProduct.array("images", 5),
+  adminController.createProduct
 );
 
 module.exports = router;

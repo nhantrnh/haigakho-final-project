@@ -310,3 +310,108 @@ exports.getProductsData = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.getCreateProduct = async (req, res) => {
+  try {
+    const categories = await Category.find().sort("name");
+    res.render("admin/layouts/admin-layout", {
+      content: "create-product",
+      title: "Create Product",
+      categories,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+exports.createProduct = async (req, res) => {
+  try {
+    const {
+      name,
+      description,
+      price,
+      stock,
+      categoryId,
+      brand,
+      material,
+      colors,
+      width,
+      height,
+      depth,
+      status,
+    } = req.body;
+
+    // Server-side validation
+    if (!name || name.length < 3) {
+      return res.status(400).json({
+        success: false,
+        message: "Product name must be at least 3 characters",
+      });
+    }
+
+    if (!price || price <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Price must be greater than 0",
+      });
+    }
+
+    if (!stock || stock < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Stock cannot be negative",
+      });
+    }
+
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category is required",
+      });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one image is required",
+      });
+    }
+
+    // Handle both uploaded files and image URLs
+    let imageUrl = [];
+
+    // Handle uploaded files
+    if (req.files && req.files.length > 0) {
+      imageUrl = req.files.map((file) => file.path);
+    }
+
+    const product = await Product.create({
+      name,
+      description,
+      price,
+      stock,
+      categoryId,
+      brand,
+      material,
+      colors: colors ? JSON.parse(colors) : [],
+      dimensions: {
+        width: width || 0,
+        height: height || 0,
+        depth: depth || 0,
+      },
+      imageUrl,
+      status: status || "onStock",
+    });
+
+    res.json({
+      success: true,
+      message: "Product created successfully",
+      product,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

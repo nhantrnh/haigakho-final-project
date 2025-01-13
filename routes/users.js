@@ -23,7 +23,7 @@ router.post("/forgot-password", userController.forgotPassword);
 router.get("/reset-password/:token", userController.getResetPassword);
 router.post("/reset-password/:token", userController.resetPassword);
 
-const { upload } = require("../config/cloudinary");
+const { uploadAvatar } = require("../config/cloudinary");
 // New protected routes
 router.get("/profile", isAuthenticated, userController.getProfile);
 router.get("/settings", isAuthenticated, userController.getSettings);
@@ -37,7 +37,7 @@ router.get("/profile/update", isAuthenticated, userController.getUpdateProfile);
 router.post(
   "/profile/update",
   isAuthenticated,
-  upload.single("avatar"),
+  uploadAvatar.single("avatar"),
   userController.updateProfile
 );
 
