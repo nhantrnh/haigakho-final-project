@@ -62,7 +62,7 @@ exports.signin = (req, res, next) => {
       });
     }
 
-    if (!user.isActive) {
+    if (!user.isEmailActive) {
       return res.status(401).json({
         success: false,
         message: "Please activate your account first. Check your email.",
@@ -151,7 +151,7 @@ exports.forgotPassword = async (req, res) => {
       return res.status(404).json({ message: "No account with that email" });
     }
 
-    if (!user.isActive) {
+    if (!user.isEmailActive) {
       return res
         .status(400)
         .json({ message: "Please activate your account first" });
@@ -337,7 +337,7 @@ exports.activateAccount = async (req, res) => {
       });
     }
 
-    user.isActive = true;
+    user.isEmailActive = true;
     user.status = "active";
     user.activationToken = undefined;
     user.activationExpires = undefined;

@@ -1,4 +1,6 @@
 const User = require("../../models/User");
+const Category = require("../../models/Category");
+const Product = require("../../models/Product");
 
 exports.getDashboard = async (req, res) => {
   try {
@@ -57,7 +59,7 @@ exports.getUsersData = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
-    const search = req.query.searchName || "";
+    const search = req.query.search || "";
     const sortField = req.query.sort || "createdAt";
     const sortOrder = req.query.order || "desc";
 
@@ -160,5 +162,111 @@ exports.toggleBanStatus = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+
+exports.getCategories = async (req, res) => {
+  try {
+    const categories = await Category.find().sort("name");
+    res.render("admin/layouts/admin-layout", {
+      content: "categories",
+      title: "Manage Categories",
+      categories,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+exports.createCategory = async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    const newCategory = await Category.create({ name, description });
+    res.status(201).json({
+      success: true,
+      message: "Category created successfully",
+      category: newCategory,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateCategory = async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    const category = await Category.findByIdAndUpdate(
+      req.params.id,
+      { name, description },
+      { new: true }
+    );
+    res.json({
+      success: true,
+      message: "Category updated successfully",
+      category,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteCategory = async (req, res) => {
+  try {
+    await Category.findByIdAndDelete(req.params.id);
+    res.json({
+      success: true,
+      message: "Category deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getProducts = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const search = req.query.search || "";
+    const category = req.query.category;
+
+    let query = {};
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+    if (category) {
+      query.categoryId = category;
+    }
+
+    const products = await Product.find(query)
+      .populate("categoryId")
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort("-createdAt");
+
+    const total = await Product.countDocuments(query);
+
+    const categories = await Category.find();
+
+    res.render("admin/layouts/admin-layout", {
+      content: "products",
+      title: "Products",
+      products,
+      categories,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      search,
+      category,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 };

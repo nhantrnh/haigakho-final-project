@@ -29,4 +29,32 @@ router.post(
   adminController.toggleBanStatus
 );
 
+router.get(
+  "/categories",
+  isAuthenticated,
+  isAdmin,
+  adminController.getCategories
+);
+
+router.post(
+  "/categories",
+  isAuthenticated,
+  isAdmin,
+  adminController.createCategory
+);
+router.put(
+  "/categories/:id",
+  isAuthenticated,
+  isAdmin,
+  adminController.updateCategory
+);
+router.delete(
+  "/categories/:id",
+  isAuthenticated,
+  isAdmin,
+  adminController.deleteCategory
+);
+
+router.get("/products", isAuthenticated, isAdmin, adminController.getProducts);
+
 module.exports = router;
