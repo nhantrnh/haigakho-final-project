@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { isAuthenticatedCheckout } = require("../middlewares/auth");
 
 router.get("/about", (req, res) => {
   res.render("pages/about");
@@ -9,15 +10,8 @@ router.get("/blog", (req, res) => {
   res.render("pages/blog");
 });
 
-router.get("/cart", (req, res) => {
-  let cart = req.session.cart;
-  console.log("cart", cart);
-
-  res.render("pages/cart", { cart: cart });
-});
-
-router.get("/checkout", (req, res) => {
-  res.render("pages/checkout");
+router.get("/checkout", isAuthenticatedCheckout, (req, res) => {
+  res.render("pages/checkout", { page: "checkout" });
 });
 
 router.get("/contact", (req, res) => {

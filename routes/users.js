@@ -32,7 +32,7 @@ router.post(
   isAuthenticated,
   userController.updatePassword
 );
-router.get("/orders", isAuthenticated, userController.getOrders);
+router.get("/my-orders", isAuthenticated, userController.getOrders);
 router.get("/profile/update", isAuthenticated, userController.getUpdateProfile);
 router.post(
   "/profile/update",
