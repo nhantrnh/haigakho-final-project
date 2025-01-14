@@ -1,0 +1,350 @@
+<div class="p-6">
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800">Edit Product</h2>
+    <p class="text-gray-600 mt-1">Update product information</p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+    <form id="editProductForm" class="p-6">
+      <input type="hidden" id="productId" value="<%= product._id %>">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Product Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+          <input type="text" name="name" required value="<%= product.name %>" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent">
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+          <select name="categoryId" required class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent">
+            <% categories.forEach(category => { %>
+            <option value="<%= category._id %>" <%= product.categoryId._id.toString() === category._id.toString() ? 'selected' : '' %>>
+              <%= category.name %>
+            </option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Price -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+          <input type="number" name="price" step="0.01" required value="<%= product.price %>" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent">
+        </div>
+
+        <!-- Stock -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+          <input type="number" name="stock" required value="<%= product.stock %>" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent">
+        </div>
+
+        <!-- Status -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <select name="status" required class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent">
+            <option value="onStock" <%= product.status === 'onStock' ? 'selected' : '' %>>On Stock</option>
+            <option value="suspend" <%= product.status === 'suspend' ? 'selected' : '' %>>Suspended</option>
+            <option value="outOfStock" <%= product.status === 'outOfStock' ? 'selected' : '' %>>Out of Stock</option>
+          </select>
+        </div>
+
+        <!-- Brand -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+          <input type="text" name="brand" value="<%= product.brand || '' %>" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent">
+        </div>
+
+        <!-- Material -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Material</label>
+          <input type="text" name="material" value="<%= product.material || '' %>" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent">
+        </div>
+
+        <!-- Colors -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Colors</label>
+          <div class="flex flex-wrap gap-2" id="colorTags">
+            <% product.colors.forEach(color => { %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
+              <%= color %>
+              <button type="button" onclick="removeColor('<%= color %>')" class="ml-2 text-gray-500 hover:text-red-500">
+                <i class="fas fa-times"></i>
+              </button>
+            </span>
+            <% }) %>
+            <input type="text" placeholder="Add color" id="colorInput" class="px-4 py-1 text-gray-900 bg-gray-50 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent">
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <textarea name="description" rows="4" required class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent"><%= product.description %></textarea>
+        </div>
+
+        <!-- Existing Images -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Current Images</label>
+          <div class="grid grid-cols-5 gap-4" id="existingImages">
+            <% product.imageUrl.forEach(img => { %>
+            <div class="relative" data-image="<%= img %>">
+              <img src="<%= img %>" class="w-full h-32 object-cover rounded-lg">
+              <button type="button" onclick="removeExistingImage(this)" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- New Images -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Add New Images</label>
+          <!-- Image Upload -->
+          <div class="mb-4">
+            <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                <p class="mb-2 text-sm text-gray-500">Click to upload</p>
+                <p class="text-xs text-gray-500">
+                  PNG, JPG, JPEG, WEBP up to 5 images
+                </p>
+              </div>
+              <input type="file" name="images" multiple accept="image/*" class="hidden" />
+            </label>
+          </div>
+          <div id="newImagePreview" class="mt-4 grid grid-cols-5 gap-4"></div>
+        </div>
+
+
+
+
+      </div>
+
+      <!-- Submit Button -->
+      <div class="mt-6 flex justify-end space-x-3">
+        <a href="/admin/products" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+          Cancel
+        </a>
+        <button type="submit" class="px-6 py-2.5 bg-[#3b5d50] text-green-500 rounded-xl hover:bg-[#2f4a40] transition-colors">
+          Update Product
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-4"></div>
+
+<script>
+  const rawColors = '<%= JSON.stringify(product.colors) %>';
+  const rawImages = '<%= JSON.stringify(product.imageUrl) %>';
+
+  const colors = new Set(JSON.parse(rawColors.replace(/&quot;/g, '"').replace(/&#34;/g, '"')));
+  let existingImages = new Set(JSON.parse(rawImages.replace(/&quot;/g, '"').replace(/&#34;/g, '"')));
+
+  let uploadedFiles = [];
+
+  function removeColor(color) {
+    colors.delete(color);
+    renderColorTags();
+  }
+
+  function renderColorTags() {
+    const container = document.getElementById('colorTags');
+    container.innerHTML = Array.from(colors).map(color => `
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
+        ${color}
+        <button type="button" onclick="removeColor('${color}')" class="ml-2 text-gray-500 hover:text-red-500">
+          <i class="fas fa-times"></i>
+        </button>
+      </span>
+    `).join('') + `
+      <input type="text" placeholder="Add color" id="colorInput"
+             class="px-4 py-1 text-gray-900 bg-gray-50 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3b5d50] focus:border-transparent">
+    `;
+
+    document.getElementById('colorInput').addEventListener('keypress', handleColorInput);
+  }
+
+  function handleColorInput(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const color = e.target.value.trim();
+      if (color && !colors.has(color)) {
+        colors.add(color);
+        renderColorTags();
+      }
+      e.target.value = '';
+    }
+  }
+
+  function removeExistingImage(button) {
+    const imageContainer = button.parentElement;
+    const imageUrl = imageContainer.dataset.image;
+    existingImages.delete(imageUrl);
+    imageContainer.remove();
+  }
+
+  document.getElementById('editProductForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const productId = document.getElementById('productId').value;
+
+    formData.append('colors', JSON.stringify(Array.from(colors)));
+    formData.append('existingImages', JSON.stringify(Array.from(existingImages)));
+
+    // Validate form
+    const errors = validateForm(formData);
+    if (errors.length > 0) {
+      errors.forEach((error) => showToast("error", error));
+      return;
+    }
+
+    formData.delete('images');
+    // set image files
+    uploadedFiles.forEach(file => {
+      formData.append('images', file);
+    });
+
+
+    const submitBtn = this.querySelector('button[type="submit"]');
+
+    try {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+
+      const response = await fetch(`/admin/products/${productId}`, {
+        method: 'PUT',
+        body: formData
+      });
+
+
+      const data = await response.json();
+      if (data.success) {
+        showToast('success', data.message);
+        setTimeout(() => {
+          window.location.href = '/admin/products';
+        }, 1000);
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      showToast('error', error.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Update Product';
+    }
+  });
+
+  function validateForm(formData) {
+    const errors = [];
+
+    // Name validation
+    const name = formData.get("name");
+    if (name.length < 3) {
+      errors.push("Product name must be at least 3 characters");
+    }
+
+    // Price validation
+    const price = parseFloat(formData.get("price"));
+    if (isNaN(price) || price <= 0) {
+      errors.push("Price must be greater than 0");
+    }
+
+    // Stock validation
+    const stock = parseInt(formData.get("stock"));
+    if (isNaN(stock) || stock < 0) {
+      errors.push("Stock cannot be negative");
+    }
+
+    // Category validation
+    if (!formData.get("categoryId")) {
+      errors.push("Please select a category");
+    }
+
+    // Images validation
+    if (uploadedFiles.length === 0) {
+      errors.push("Please upload at least one image");
+    }
+    if (uploadedFiles.length > 5) {
+      errors.push("Maximum 5 images allowed");
+    }
+
+    // Dimensions validation
+    const width = parseFloat(formData.get("width"));
+    const height = parseFloat(formData.get("height"));
+    const depth = parseFloat(formData.get("depth"));
+
+    if (
+      (width && isNaN(width)) ||
+      (height && isNaN(height)) ||
+      (depth && isNaN(depth))
+    ) {
+      errors.push("Dimensions must be valid numbers");
+    }
+
+    return errors;
+  }
+
+  function renderNewImagePreview(files) {
+    const preview = document.getElementById("newImagePreview");
+    preview.innerHTML = files
+      .map(
+        (file, index) => `
+    <div class="relative">
+      <img src="${URL.createObjectURL(
+        file
+      )}" class="w-full h-32 object-cover rounded-lg">
+      <button type="button" onclick="removeImageUpload(${index})" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `
+      )
+      .join("");
+  }
+
+
+
+  function removeImageUpload(index) {
+    uploadedFiles.splice(index, 1); // Xóa file theo index
+    renderNewImagePreview(uploadedFiles); // Render lại preview
+  }
+
+  document
+    .querySelector('input[type="file"]')
+    .addEventListener("change", function(e) {
+      uploadedFiles = Array.from(e.target.files); // Cập nhật danh sách file
+      renderNewImagePreview(uploadedFiles); // Render preview
+    });
+
+  function showToast(type, message) {
+    const toastContainer = document.getElementById("toastContainer");
+
+    // Tạo phần tử toast
+    const toast = document.createElement("div");
+    toast.className = `flex items-center p-4 rounded shadow-md text-white ${
+      type === "success" ? "bg-green-500" : "bg-red-500"
+    }`;
+    toast.innerHTML = `
+    <div class="flex-shrink-0">
+      <i class="fas ${
+        type === "success" ? "fa-check-circle" : "fa-times-circle"
+      } text-lg mr-2"></i>
+    </div>
+    <div>${message}</div>
+  `;
+
+    // Thêm toast vào container
+    toastContainer.appendChild(toast);
+
+    // Tự động xóa toast sau 3 giây
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+  }
+
+  // Initial setup
+  document.getElementById('colorInput').addEventListener('keypress', handleColorInput);
+</script>

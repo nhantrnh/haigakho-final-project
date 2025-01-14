@@ -415,3 +415,115 @@ exports.createProduct = async (req, res) => {
     });
   }
 };
+
+exports.getEditProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate(
+      "categoryId"
+    );
+    const categories = await Category.find().sort("name");
+
+    if (!product) {
+      return res.status(404).send("Product not found");
+    }
+
+    res.render("admin/layouts/admin-layout", {
+      content: "edit-product",
+      title: "Edit Product",
+      product,
+      categories,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const {
+      name,
+      description,
+      price,
+      stock,
+      categoryId,
+      brand,
+      material,
+      colors,
+      width,
+      height,
+      depth,
+      status,
+      existingImages,
+    } = req.body;
+
+    // Validation
+    if (!name || name.length < 3) {
+      return res.status(400).json({
+        success: false,
+        message: "Product name must be at least 3 characters",
+      });
+    }
+
+    if (!price || price <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Price must be greater than 0",
+      });
+    }
+
+    if (!stock || stock < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Stock cannot be negative",
+      });
+    }
+
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category is required",
+      });
+    }
+
+    // Handle images
+    let imageUrl = existingImages ? JSON.parse(existingImages) : [];
+
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map((file) => file.path);
+      imageUrl = [...imageUrl, ...newImages];
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        description,
+        price,
+        stock,
+        categoryId,
+        brand,
+        material,
+        colors: colors ? JSON.parse(colors) : [],
+        dimensions: {
+          width: width || 0,
+          height: height || 0,
+          depth: depth || 0,
+        },
+        imageUrl,
+        status,
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

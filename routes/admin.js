@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const { isAuthenticated, isAdmin } = require("../middlewares/auth");
 const adminController = require("../controllers/admin/adminController");
-const { uploadProduct } = require("../config/cloudinary");
+const { uploadProductMiddleware } = require("../middlewares/cloudinary");
 
 router.get("/users", isAuthenticated, isAdmin, adminController.getUsers);
 
@@ -74,8 +74,24 @@ router.post(
   "/products",
   isAuthenticated,
   isAdmin,
-  uploadProduct.array("images", 5),
+  uploadProductMiddleware,
   adminController.createProduct
+);
+
+router.get(
+  "/products/:id/edit",
+  isAuthenticated,
+  isAdmin,
+  adminController.getEditProduct
+);
+
+// Sử dụng middleware mới này thay vì uploadProduct.array trực tiếp
+router.put(
+  "/products/:id",
+  isAuthenticated,
+  isAdmin,
+  uploadProductMiddleware,
+  adminController.updateProduct
 );
 
 module.exports = router;
