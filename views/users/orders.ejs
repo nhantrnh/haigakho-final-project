@@ -11,85 +11,213 @@
     <link href="css/style.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      .order-filters {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding: 0.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .filter-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border: none;
+        background: white;
+        color: #666;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        white-space: nowrap;
+      }
+
+      .filter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .filter-btn.active {
+        background: #3b5d50;
+        color: white;
+      }
+
+      .filter-btn .count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 999px;
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+      }
+
+      .filter-btn.active .count {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .order-filters {
+          padding-bottom: 1rem;
+        }
+
+        .filter-btn {
+          padding: 0.5rem 1rem;
+        }
+      }
+    </style>
   </head>
+
   <body>
     <%- include('../partials/header', {page: page}) %>
-    <main class="container">
-      <div class="orders-container">
-        <h1>My Orders</h1>
 
-        <div class="orders-list">
-          <% if (locals.orders && orders.length > 0) { %> <%
-          orders.forEach(order => { %>
-          <div class="order-card">
-            <div class="order-header">
-              <span class="order-id"
-                >#<%= order._id.toString().slice(-8).toUpperCase() %></span
+    <div class="container py-5 my-5">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="mb-4">My Orders</h2>
+
+          <!-- Order Filter -->
+          <div class="order-filters">
+            <button class="filter-btn active" data-filter="all">
+              <i class="fas fa-list"></i>
+              <span>All Orders</span>
+              <span class="count"><%= orders.length %></span>
+            </button>
+
+            <button class="filter-btn" data-filter="pending">
+              <i class="fas fa-clock"></i>
+              <span>Pending</span>
+              <span class="count"
+                ><%= orders.filter(o => o.status === 'pending').length %></span
               >
-              <span class="order-date">
-                <i class="far fa-calendar-alt me-2"></i>
-                <%= new Date(order.createdAt).toLocaleDateString('vi-VN') %>
-              </span>
-              <span class="order-status <%= order.status.toLowerCase() %>">
-                <i class="fas fa-circle me-2"></i>
-                <%= order.status %>
-              </span>
-            </div>
+            </button>
 
-            <div class="order-items">
-              <% order.items.forEach(item => { %>
-              <div class="order-item">
-                <img
-                  src="<%= item.product.image %>"
-                  alt="<%= item.product.name %>"
-                  class="order-item-image"
-                />
-                <div class="order-item-details">
-                  <div class="order-item-name"><%= item.product.name %></div>
-                  <div class="order-item-price">
-                    <%= item.price.toLocaleString() %> VNĐ
-                  </div>
-                  <div class="order-item-quantity">
-                    Số lượng: <%= item.quantity %>
+            <button class="filter-btn" data-filter="confirmed">
+              <i class="fas fa-check"></i>
+              <span>Confirmed</span>
+              <span class="count"
+                ><%= orders.filter(o => o.status === 'confirmed').length
+                %></span
+              >
+            </button>
+
+            <button class="filter-btn" data-filter="shipping">
+              <i class="fas fa-truck"></i>
+              <span>Shipping</span>
+              <span class="count"
+                ><%= orders.filter(o => o.status === 'shipping').length %></span
+              >
+            </button>
+
+            <button class="filter-btn" data-filter="delivered">
+              <i class="fas fa-box"></i>
+              <span>Delivered</span>
+              <span class="count"
+                ><%= orders.filter(o => o.status === 'delivered').length
+                %></span
+              >
+            </button>
+          </div>
+
+          <!-- Orders List -->
+          <div class="orders-list">
+            <% if (orders && orders.length > 0) { %> <% orders.forEach(order =>
+            { %>
+            <div
+              class="order-card"
+              data-status="<%= order.status.toLowerCase() %>"
+            >
+              <div class="order-header">
+                <span class="order-id">#<%= order.orderNumber %></span>
+                <span class="order-date">
+                  <i class="far fa-calendar-alt me-2"></i>
+                  <%= new Date(order.createdAt).toLocaleDateString() %>
+                </span>
+                <span class="order-status <%= order.status.toLowerCase() %>">
+                  <i class="fas fa-circle me-2"></i>
+                  <%= order.status %>
+                </span>
+              </div>
+
+              <div class="order-items">
+                <% order.items.forEach(item => { %>
+                <div class="order-item">
+                  <img
+                    src="<%= item.imageUrl %>"
+                    alt="<%= item.name %>"
+                    class="order-item-image"
+                  />
+                  <div class="order-item-details">
+                    <div class="order-item-name"><%= item.name %></div>
+                    <div class="order-item-price">
+                      $<%= item.price.toFixed(2) %>
+                    </div>
+                    <div class="order-item-quantity">
+                      Quantity: <%= item.quantity %>
+                    </div>
                   </div>
                 </div>
+                <% }) %>
               </div>
-              <% }) %>
-            </div>
 
-            <div class="order-footer">
-              <span class="order-total">
-                <i class="fas fa-receipt me-2"></i>
-                Tổng: <%= order.total.toLocaleString() %> VNĐ
-              </span>
-              <button
-                class="btn btn-primary"
-                onclick="viewOrderDetails('<%= order._id %>')"
-              >
-                <i class="fas fa-eye me-2"></i>
-                View Details
-              </button>
+              <div class="order-footer">
+                <span class="order-total">
+                  <i class="fas fa-receipt me-2"></i>
+                  Total: $<%= order.total.toFixed(2) %>
+                </span>
+                <button
+                  class="btn btn-outline-primary"
+                  onclick="viewOrderDetails('<%= order._id %>')"
+                >
+                  <i class="fas fa-eye me-2"></i>
+                  View Details
+                </button>
+              </div>
             </div>
+            <% }) %> <% } else { %>
+            <div class="empty-orders">
+              <i
+                class="fas fa-shopping-bag fa-3x mb-4"
+                style="color: #3b5d50"
+              ></i>
+              <p>You have no orders</p>
+              <a href="/shop" class="btn btn-success">
+                <i class="fas fa-shopping-cart me-2"></i>
+                Shop Now
+              </a>
+            </div>
+            <% } %>
           </div>
-          <% }) %> <% } else { %>
-          <div class="empty-orders">
-            <i
-              class="fas fa-shopping-bag fa-3x mb-4"
-              style="color: #3b5d50"
-            ></i>
-            <p>You have no orders</p>
-            <a href="/shop" class="btn btn-primary">
-              <i class="fas fa-shopping-cart me-2"></i>
-              Buy now
-            </a>
-          </div>
-          <% } %>
         </div>
       </div>
-    </main>
+    </div>
+
+    <div id="orderDetailsModal" class="modal"></div>
+
     <%- include('../partials/footer') %>
+
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/tiny-slider.js"></script>
     <script src="js/custom.js"></script>
+    <script src="/js/order.js"></script>
+    <script>
+      $(".filter-btn").click(function () {
+        $(this).addClass("active").siblings().removeClass("active");
+        const filter = $(this).data("filter");
+
+        if (filter === "all") {
+          $(".order-card").show();
+        } else {
+          $(".order-card").hide();
+          $(`.order-card[data-status="${filter}"]`).show();
+        }
+      });
+    </script>
   </body>
 </html>

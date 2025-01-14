@@ -1,8 +1,10 @@
+// middlewares/auth.js
 module.exports = {
   isAuthenticated: (req, res, next) => {
     if (req.isAuthenticated()) {
       return next();
     }
+    // Lưu URL yêu cầu ban đầu để redirect sau khi đăng nhập
     req.session.returnTo = req.originalUrl;
     res.redirect("/signin");
   },
@@ -36,5 +38,14 @@ module.exports = {
       success: false,
       message: "Access denied",
     });
+  },
+
+  isAuthenticatedCheckout: (req, res, next) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    // Save returnUrl as checkout for special handling
+    req.session.returnTo = "/checkout";
+    res.redirect("/signin");
   },
 };
