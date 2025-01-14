@@ -5,6 +5,8 @@ const passport = require("passport");
 const crypto = require("crypto");
 const emailHelper = require("../helpers/emailHelper");
 const { stat } = require("fs");
+const e = require("express");
+const Cart = require("../models/Cart");
 
 exports.getSignUp = (req, res) => {
   res.render("users/signup");
@@ -50,7 +52,7 @@ exports.getSignIn = (req, res) => {
 };
 
 exports.signin = (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
+  passport.authenticate("local", async (err, user, info) => {
     if (err) {
       return next(err);
     }
@@ -62,58 +64,119 @@ exports.signin = (req, res, next) => {
       });
     }
 
-    if (!user.isEmailActive) {
-      return res.status(401).json({
-        success: false,
-        message: "Please activate your account first. Check your email.",
-      });
-    }
-
-    if (user.status === "banned") {
-      return res.status(403).json({
-        success: false,
-        message: `Your account has been banned. Reason: ${user.banReason}`,
-      });
-    }
-
-    req.logIn(user, (err) => {
-      if (err) {
-        return next(err);
+    try {
+      if (!user.isEmailActive) {
+        return res.status(401).json({
+          success: false,
+          message: "Please activate your account first. Check your email.",
+        });
       }
 
-      // Check if user is admin and return appropriate redirect URL
-      const redirectUrl = user.role === "admin" ? "/admin" : "/";
+      if (user.status === "banned") {
+        return res.status(403).json({
+          success: false,
+          message: `Your account has been banned. Reason: ${user.banReason}`,
+        });
+      }
 
+      // Find guest cart before login
+      const guestCart = await Cart.findOne({
+        sessionId: req.sessionID,
+        userId: null,
+      });
+
+      // Login user
+      await new Promise((resolve, reject) => {
+        req.logIn(user, (err) => {
+          if (err) reject(err);
+          resolve();
+        });
+      });
+
+      // Handle cart merge after login
+      if (guestCart) {
+        let userCart = await Cart.findOne({ userId: user._id });
+
+        if (!userCart) {
+          // Transfer guest cart to user
+          userCart = await Cart.findByIdAndUpdate(
+            guestCart._id,
+            {
+              userId: user._id,
+              sessionId: null,
+            },
+            { new: true }
+          );
+        } else {
+          // Merge carts
+          guestCart.items.forEach((item) => {
+            const existingItem = userCart.items.find(
+              (i) => i.productId.toString() === item.productId.toString()
+            );
+            if (existingItem) {
+              existingItem.quantity += item.quantity;
+            } else {
+              userCart.items.push(item);
+            }
+          });
+
+          userCart.total = userCart.items.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+          );
+
+          await userCart.save();
+          await guestCart.deleteOne();
+        }
+      }
+
+      const redirectUrl = user.role === "admin" ? "/admin" : "/";
       return res.status(200).json({
         success: true,
         message: "Login successful",
-        redirectUrl: redirectUrl,
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-        },
+        redirectUrl,
       });
-    });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
   })(req, res, next);
 };
 
-exports.signout = (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: "Error logging out",
+exports.signout = async (req, res) => {
+  try {
+    // Find user cart before logout
+    const userCart = await Cart.findOne({ userId: req.user._id });
+
+    // Create new guest cart if user had items
+    if (userCart?.items.length > 0) {
+      await Cart.create({
+        sessionId: req.sessionID,
+        items: userCart.items,
+        total: userCart.total,
       });
     }
+
+    // Logout
+    await new Promise((resolve, reject) => {
+      req.logout((err) => {
+        if (err) reject(err);
+        resolve();
+      });
+    });
+
     req.session.destroy();
-    res.clearCookie("connect.sid"); // Clear session cookie
-    res.status(200).json({
+    res.clearCookie("connect.sid");
+
+    res.json({
       success: true,
       message: "Logout successful",
     });
-  });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 // controllers/userController.js
