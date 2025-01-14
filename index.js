@@ -2,6 +2,7 @@
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const mongoose = require("mongoose");
 if (process.env.NODE_ENV !== "production") {
@@ -20,6 +21,10 @@ app.use(
     secret: "hagako-web-secret-key",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      ttl: 24 * 60 * 60, // Session TTL (1 day)
+    }),
     cookie: {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -39,12 +44,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  if (!req.session.cart) {
-    req.session.cart = [];
-  }
-  next();
-});
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -53,13 +52,13 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views")); // Add this line
 
 // MongoDB connection
-mongoose.connect("mongodb://localhost:27017/test");
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/test");
 
 // Routes
 app.use("/", require("./routes/pages"));
 app.use("/shop", require("./routes/products"));
 app.use("/", require("./routes/users"));
-app.use("/", require("./routes/routes"));
+app.use("/cart", require("./routes/carts"));
 app.use("/reviews", require("./routes/reviews"));
 app.use("/admin", require("./routes/admin"));
 
