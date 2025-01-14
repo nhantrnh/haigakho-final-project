@@ -191,7 +191,7 @@
                 ></i>
                 <p class="mb-2 text-sm text-gray-500">Click to upload</p>
                 <p class="text-xs text-gray-500">
-                  PNG, JPG, JPEG up to 5 images
+                  PNG, JPG, JPEG, WEBP up to 5 images
                 </p>
               </div>
               <input
@@ -309,6 +309,12 @@
         errors.forEach((error) => showToast("error", error));
         return;
       }
+
+      formData.delete("images");
+      // set image files
+      uploadedFiles.forEach((file) => {
+        formData.append("images", file);
+      });
 
       formData.append("colors", JSON.stringify(Array.from(colors)));
 

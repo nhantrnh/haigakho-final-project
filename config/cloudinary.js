@@ -13,7 +13,7 @@ const avatarStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "haigakho/users/avatars",
-    allowed_formats: ["jpg", "png", "jpeg"],
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
     transformation: [{ width: 500, height: 500, crop: "limit" }],
   },
 });
@@ -22,7 +22,7 @@ const productStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "haigakho/products",
-    allowed_formats: ["jpg", "png", "jpeg"],
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
     transformation: [{ width: 800, height: 800, crop: "limit" }],
   },
 });
