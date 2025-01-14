@@ -52,7 +52,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views")); // Add this line
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/test");
+mongoose.connect("mongodb://localhost:27017/test");
 
 // Routes
 app.use("/", require("./routes/pages"));
@@ -61,6 +61,8 @@ app.use("/", require("./routes/users"));
 app.use("/cart", require("./routes/carts"));
 app.use("/reviews", require("./routes/reviews"));
 app.use("/admin", require("./routes/admin"));
+app.use("/auth", require("./routes/auth"));
+app.use("/orders", require("./routes/orders"));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
