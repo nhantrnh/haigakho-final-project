@@ -225,29 +225,7 @@
       }
     });
 
-  // async function deleteCategory(id) {
-  //   if (!confirm("Are you sure you want to delete this category?")) return;
-
-  //   try {
-  //     const response = await fetch(`/admin/categories/${id}`, {
-  //       method: "DELETE",
-  //     });
-
-  //     const data = await response.json();
-  //     if (data.success) {
-  //       showToast("success", data.message);
-  //       location.reload();
-  //     } else {
-  //       showToast("error", data.message);
-  //     }
-  //   } catch (error) {
-  //     showToast("error", "Failed to delete category");
-  //   }
-  // }
-
   function showToast(type, message) {
-    // Add your toast notification implementation
-    // Example using Toastify or other library
     Toastify({
       text: message,
       duration: 3000,

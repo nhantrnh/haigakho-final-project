@@ -1,10 +1,8 @@
-// middlewares/auth.js
 module.exports = {
   isAuthenticated: (req, res, next) => {
     if (req.isAuthenticated()) {
       return next();
     }
-    // Lưu URL yêu cầu ban đầu để redirect sau khi đăng nhập
     req.session.returnTo = req.originalUrl;
     res.redirect("/signin");
   },

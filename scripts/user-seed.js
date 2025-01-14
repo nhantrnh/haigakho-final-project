@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const { use } = require("passport");
 
-mongoose.connect("mongodb://localhost:27017/test");
+mongoose.connect("mongodb+srv://haigakho:haigakho@hcmus.iiqtx.mongodb.net/hagako-web?retryWrites=true&w=majority&appName=HCMUS");
 
 const admin = [
   {
