@@ -527,3 +527,86 @@ exports.updateProduct = async (req, res) => {
     });
   }
 };
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    const admin = await User.findById(req.user.id).select("-password");
+    res.render("admin/layouts/admin-layout", {
+      content: "profile",
+      title: "My Profile",
+      admin,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { username, email, name, address, currentPassword, newPassword } =
+      req.body;
+    const admin = await User.findById(req.user.id);
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found",
+      });
+    }
+
+    // Validate current password if trying to change password
+    if (newPassword) {
+      const isMatch = await admin.matchPassword(currentPassword);
+      if (!isMatch) {
+        return res.status(400).json({
+          success: false,
+          message: "Current password is incorrect",
+        });
+      }
+      admin.password = newPassword;
+    }
+
+    // Update profile info
+    admin.username = username;
+    admin.email = email;
+    admin.name = name;
+    admin.address = address;
+
+    // Update avatar if uploaded
+    if (req.file) {
+      admin.avatar = req.file.path;
+    }
+
+    await admin.save();
+
+    res.json({
+      success: true,
+      message: "Profile updated successfully",
+      admin: {
+        username: admin.username,
+        email: admin.email,
+        avatar: admin.avatar,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

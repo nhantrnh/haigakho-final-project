@@ -132,6 +132,7 @@
     </div>
   </div>
 </div>
+<div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-4"></div>
 
 <script>
   let currentPage = 1;
@@ -262,6 +263,55 @@
 
     html += "</div>";
     return html;
+  }
+
+  async function deleteProduct(id) {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+
+    try {
+      const response = await fetch(`/admin/products/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        showToast("success", data.message);
+        setTimeout(() => {
+          loadProducts(currentPage);
+        }, 1000);
+      } else {
+        showToast("error", data.message);
+      }
+    } catch (error) {
+      showToast("error", "Failed to delete category");
+    }
+  }
+
+
+  function showToast(type, message) {
+    const toastContainer = document.getElementById("toastContainer");
+
+    // Tạo phần tử toast
+    const toast = document.createElement("div");
+    toast.className = `flex items-center p-4 rounded shadow-md text-white ${
+      type === "success" ? "bg-green-500" : "bg-red-500"
+    }`;
+    toast.innerHTML = `
+    <div class="flex-shrink-0">
+      <i class="fas ${
+        type === "success" ? "fa-check-circle" : "fa-times-circle"
+      } text-lg mr-2"></i>
+    </div>
+    <div>${message}</div>
+  `;
+
+    // Thêm toast vào container
+    toastContainer.appendChild(toast);
+
+    // Tự động xóa toast sau 3 giây
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
   }
 
   // Event Listeners

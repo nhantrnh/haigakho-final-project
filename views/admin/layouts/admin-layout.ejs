@@ -30,7 +30,11 @@
       <div class="w-64 sidebar text-white">
         <div class="p-6">
           <div class="flex items-center mb-8">
-            <img src="/images/logo.png" alt="Logo" class="h-10 w-auto mr-3" />
+            <img
+              src="/images/hagako_logo.png"
+              alt="Logo"
+              class="h-10 w-auto mr-3 rounded-full object-cover border-2 border-gray-300"
+            />
             <span class="text-xl font-bold tracking-wider">Haigakho</span>
           </div>
 
@@ -88,12 +92,17 @@
         <!-- Profile Section -->
         <div class="absolute bottom-0 w-64 profile-section">
           <div class="p-4 flex items-center">
-            <img
-              src="https://ui-avatars.com/api/?name=Admin&background=f9bf29&color=3b5d50"
-              class="w-10 h-10 rounded-full ring-2 ring-[#f9bf29]"
-            />
+            <a
+              href="/admin/profile"
+              class="flex items-center space-x-3 text-gray-100 hover:text-[#f9bf29] transition-colors"
+            >
+              <img
+                src="<%= user.avatar || `https://ui-avatars.com/api/?name=${user.username}&background=f9bf29&color=3b5d50` %>"
+                class="w-10 h-10 rounded-full ring-2 ring-[#f9bf29]"
+            /></a>
+
             <div class="ml-3">
-              <p class="text-sm font-medium">Admin User</p>
+              <p class="text-sm font-medium"><%= user.username %></p>
               <a
                 href="/logout"
                 class="text-xs text-gray-300 hover:text-[#f9bf29] transition-colors"

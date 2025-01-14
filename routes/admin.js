@@ -3,7 +3,10 @@ const express = require("express");
 const router = express.Router();
 const { isAuthenticated, isAdmin } = require("../middlewares/auth");
 const adminController = require("../controllers/admin/adminController");
-const { uploadProductMiddleware } = require("../middlewares/cloudinary");
+const {
+  uploadProductMiddleware,
+  uploadAvatarMiddleware,
+} = require("../middlewares/cloudinary");
 
 router.get("/users", isAuthenticated, isAdmin, adminController.getUsers);
 
@@ -92,6 +95,23 @@ router.put(
   isAdmin,
   uploadProductMiddleware,
   adminController.updateProduct
+);
+
+router.delete(
+  "/products/:id",
+  isAuthenticated,
+  isAdmin,
+  adminController.deleteProduct
+);
+
+// Add new route
+router.get("/profile", isAuthenticated, isAdmin, adminController.getProfile);
+router.put(
+  "/profile",
+  isAuthenticated,
+  isAdmin,
+  uploadAvatarMiddleware,
+  adminController.updateProfile
 );
 
 module.exports = router;
