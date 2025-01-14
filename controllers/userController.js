@@ -7,6 +7,7 @@ const emailHelper = require("../helpers/emailHelper");
 const { stat } = require("fs");
 const e = require("express");
 const Cart = require("../models/Cart");
+const Order = require("../models/Order");
 
 exports.getSignUp = (req, res) => {
   res.render("users/signup");
@@ -129,8 +130,10 @@ exports.signin = (req, res, next) => {
           await guestCart.deleteOne();
         }
       }
+      const returnTo = req.session.returnTo || "/";
+      delete req.session.returnTo;
 
-      const redirectUrl = user.role === "admin" ? "/admin" : "/";
+      const redirectUrl = user.role === "admin" ? "/admin" : returnTo;
       return res.status(200).json({
         success: true,
         message: "Login successful",
@@ -335,11 +338,24 @@ exports.updatePassword = async (req, res) => {
 };
 
 exports.getOrders = async (req, res) => {
-  res.render("users/orders", {
-    user: req.user,
-    title: "My order",
-    page: "orders",
-  });
+  try {
+    const orders = await Order.find({
+      userId: req.user._id,
+    })
+      .populate("items.productId")
+      .sort("-createdAt");
+    res.render("users/orders", {
+      user: req.user,
+      title: "My order",
+      page: "orders",
+      orders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 exports.getUpdateProfile = (req, res) => {
