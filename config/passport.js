@@ -1,10 +1,12 @@
-// config/passport.js
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const FacebookStrategy = require("passport-facebook").Strategy;
 
 module.exports = function (passport) {
+  // LocalStrategy: Đăng nhập qua username và password
   passport.use(
     new LocalStrategy(
       { usernameField: "username" },
@@ -25,6 +27,75 @@ module.exports = function (passport) {
           } else {
             return done(null, false, { message: "Incorrect password" });
           }
+        } catch (err) {
+          return done(err);
+        }
+      }
+    )
+  );
+
+  // Google OAuth2 Strategy: Đăng nhập bằng Google
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID, // Sử dụng biến môi trường
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Sử dụng biến môi trường
+        callbackURL: process.env.GOOGLE_CALLBACK_URL,  // Cấu hình URL callback trong biến môi trường
+      },
+      async (token, tokenSecret, profile, done) => {
+        try {
+          // Kiểm tra xem user đã đăng ký chưa
+          let user = await User.findOne({ email: profile.emails[0].value });
+
+          if (!user) {
+            // Nếu chưa, tạo tài khoản mới
+            user = new User({
+              username: profile.displayName, // Dùng tên hiển thị của Google
+              email: profile.emails[0].value,
+              name: profile.displayName,
+              avatar: profile.photos[0].value, // Dùng ảnh đại diện từ Google
+              role: "user",
+              status: "active",
+              isEmailActive: true,
+              password: "$2a$10$ZpavtLzGigUEBxeKBxsPEOC0bClq6IhC6S3BZApSy9BLxwKwrEQWG",
+            });
+            await user.save();
+          }
+
+          return done(null, user);
+        } catch (err) {
+          return done(err);
+        }
+      }
+    )
+  );
+
+  passport.use(
+    new FacebookStrategy(
+      {
+        clientID: process.env.FACEBOOK_APP_ID,
+        clientSecret: process.env.FACEBOOK_APP_SECRET,
+        callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+        profileFields: ['id', 'displayName', 'email', 'photos'],
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          let user = await User.findOne({ email: profile.emails[0].value });
+
+          if (!user) {
+            user = new User({
+              username: profile.displayName,
+              email: profile.emails[0].value,
+              name: profile.displayName,
+              avatar: profile.photos[0].value ? profile.photos[0].value : '',
+              role: "user",
+              status: "active",
+              password: "$2a$10$ZpavtLzGigUEBxeKBxsPEOC0bClq6IhC6S3BZApSy9BLxwKwrEQWG",
+            });
+            await user.save();
+          }
+
+          return done(null, user);
         } catch (err) {
           return done(err);
         }

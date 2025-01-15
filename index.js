@@ -5,11 +5,20 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const mongoose = require("mongoose");
+const https = require('https');
+const fs = require('fs');
+const app = express();
+
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-const app = express();
+const options = {
+  key: fs.readFileSync('./key/key.pem'),
+  cert: fs.readFileSync('./key/cert.pem')
+};
+
+const server = https.createServer(options, app);
 
 // Middleware
 app.use(express.json());
@@ -72,6 +81,10 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
+
+server.listen(PORT, function() {
+  console.log(`Server MAIN started on port https://localhost:${PORT}`);
 });
