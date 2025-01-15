@@ -62,7 +62,7 @@ app.set("views", path.join(__dirname, "views")); // Add this line
 
 // MongoDB connection
 mongoose.connect(
-  "mongodb+srv://haigakho:haigakho@hcmus.iiqtx.mongodb.net/hagako-web?retryWrites=true&w=majority&appName=HCMUS"
+  "mongodb://localhost:27017/test"
 );
 
 // Routes
