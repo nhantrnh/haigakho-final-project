@@ -31,8 +31,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      ttl: 24 * 60 * 60, // Session TTL (1 day)
+      mongoUrl: process.env.MONGODB_URI || "mongodb://localhost:27017/test",
+      ttl: 24 * 60 * 60,
     }),
     cookie: {
       secure: process.env.NODE_ENV === "production",
@@ -61,9 +61,10 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views")); // Add this line
 
 // MongoDB connection
-mongoose.connect(
-  "mongodb://localhost:27017/test"
-);
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/test", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 // Routes
 app.use("/", require("./routes/pages"));
