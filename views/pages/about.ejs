@@ -30,29 +30,40 @@
     <!-- End Header/Navigation -->
 
     <!-- Start Hero Section -->
-    <div class="hero">
+    <!-- Update About & Contact Hero Sections -->
+    <div class="page-hero">
       <div class="container">
-        <div class="row justify-content-between">
+        <div class="row justify-content-between align-items-center">
           <div class="col-lg-5">
-            <div class="intro-excerpt">
-              <h1>About Us</h1>
-              <p class="mb-4">
-                Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet
-                velit. Aliquam vulputate velit imperdiet dolor tempor tristique.
+            <div class="hero-content">
+              <nav class="hero-page-breadcrumb">
+                <a href="/">Home</a>
+                <span class="separator">/</span>
+                <span class="current">About us</span>
+              </nav>
+              <!-- For About Page -->
+              <h1 class="hero-title">About us</h1>
+              <p class="hero-description">
+                We pride ourselves on providing high quality furniture products,
+                with unique designs and the most professional service.
               </p>
-              <p>
-                <a href="/shop" class="btn btn-secondary me-2">Shop Now</a
-                ><a href="#" class="btn btn-white-outline">Explore</a>
-              </p>
+
+              <div class="hero-buttons">
+                <a href="/shop" class="btn btn-secondary me-2">Buy Now</a>
+                <a href="#why-choose-us" class="btn btn-white-outline"
+                  >Learn More</a
+                >
+              </div>
             </div>
           </div>
-          <div class="col-lg-7">
-            <div class="hero-img-wrap">
-              <img src="images/couch.png" class="img-fluid" />
+          <div class="col-lg-6">
+            <div class="hero-image-wrap">
+              <img src="images/couch.png" class="img-fluid" alt="Hero Image" />
             </div>
           </div>
         </div>
       </div>
+      <div class="hero-shape"></div>
     </div>
     <!-- End Hero Section -->
 
@@ -341,6 +352,5 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/tiny-slider.js"></script>
     <script src="js/custom.js"></script>
-    
   </body>
 </html>

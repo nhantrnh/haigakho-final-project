@@ -132,3 +132,26 @@
   transform: rotate(90deg);
   color: #dc3545;
 }
+
+/* Pagination */
+.pagination {
+  margin: 0;
+  padding: 1rem;
+}
+
+.page-link {
+  border: none;
+  width: 35px;
+  height: 35px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin: 0 3px;
+  color: #3b5d50;
+}
+
+.page-item.active .page-link {
+  background: #3b5d50;
+  color: white;
+}

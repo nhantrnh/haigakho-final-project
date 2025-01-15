@@ -281,12 +281,27 @@ exports.resetPassword = async (req, res) => {
 };
 
 // Thêm các methods mới
-exports.getProfile = (req, res) => {
-  res.render("users/profile", {
-    user: req.user,
-    title: "Account information",
-    page: "profile",
-  });
+exports.getProfile = async (req, res) => {
+  try {
+    id = req.user._id;
+    console.log(id);
+    // Get order count
+    const orderCount = await Order.countDocuments({ userId: req.user._id });
+
+    console.log(orderCount);
+
+    res.render("users/profile", {
+      user: req.user,
+      title: "Account information",
+      page: "profile",
+      orderCount,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 exports.getSettings = (req, res) => {

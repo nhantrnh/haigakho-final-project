@@ -1,0 +1,159 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800">Revenue Reports</h2>
+    <p class="text-gray-600 mt-1">Track your business performance</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <div class="flex flex-wrap gap-4 items-center">
+      <div class="flex-1">
+        <select id="timeRange" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#3b5d50]">
+          <option value="day">Daily</option>
+          <option value="week" selected>Weekly</option>
+          <option value="month">Monthly</option>
+          <option value="year">Yearly</option>
+        </select>
+      </div>
+      
+      <div class="flex-1">
+        <input type="date" id="startDate" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#3b5d50]">
+      </div>
+      
+      <div class="flex-1">
+        <input type="date" id="endDate" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#3b5d50]">
+      </div>
+      
+      <button onclick="loadRevenueData()" class="px-6 py-2.5 bg-[#3b5d50] text-white rounded-xl hover:bg-[#2f4a40]">
+        Apply
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-green-100">
+          <i class="fas fa-dollar-sign text-green-600"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500">Total Revenue</p>
+          <h3 id="totalRevenue" class="text-2xl font-bold text-gray-800">$0</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-blue-100">
+          <i class="fas fa-shopping-cart text-blue-600"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500">Total Orders</p>
+          <h3 id="totalOrders" class="text-2xl font-bold text-gray-800">0</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-purple-100">
+          <i class="fas fa-chart-line text-purple-600"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500">Avg. Order Value</p>
+          <h3 id="avgOrderValue" class="text-2xl font-bold text-gray-800">$0</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <canvas id="revenueChart"></canvas>
+  </div>
+</div>
+
+<script>
+let revenueChart;
+
+async function loadRevenueData() {
+  const range = document.getElementById('timeRange').value;
+  const start = document.getElementById('startDate').value;
+  const end = document.getElementById('endDate').value;
+
+  try {
+    const response = await fetch(`/admin/api/reports/revenue?range=${range}&start=${start}&end=${end}`);
+    const data = await response.json();
+
+    if (data.success) {
+      updateStats(data.summary);
+      updateChart(data.data, range);
+    }
+  } catch (error) {
+    console.error('Error loading revenue data:', error);
+    showToast('error', 'Failed to load revenue data');
+  }
+}
+
+function updateStats(summary) {
+  document.getElementById('totalRevenue').textContent = `$${summary.totalRevenue.toFixed(2)}`;
+  document.getElementById('totalOrders').textContent = summary.totalOrders;
+  document.getElementById('avgOrderValue').textContent = `$${summary.avgOrderValue.toFixed(2)}`;
+}
+
+function updateChart(data, range) {
+  const ctx = document.getElementById('revenueChart').getContext('2d');
+  
+  if (revenueChart) {
+    revenueChart.destroy();
+  }
+
+  revenueChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(item => item._id),
+      datasets: [{
+        label: 'Revenue',
+        data: data.map(item => item.revenue),
+        borderColor: '#3b5d50',
+        tension: 0.4,
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: `Revenue Over Time (${range.charAt(0).toUpperCase() + range.slice(1)}ly)`
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: value => `$${value}`
+          }
+        }
+      }
+    }
+  });
+}
+
+// Set default dates
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date();
+  const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+  
+  document.getElementById('startDate').value = lastMonth.toISOString().split('T')[0];
+  document.getElementById('endDate').value = today.toISOString().split('T')[0];
+  
+  loadRevenueData();
+});
+
+// Update when range changes
+document.getElementById('timeRange').addEventListener('change', loadRevenueData);
+</script>

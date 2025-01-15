@@ -12,7 +12,7 @@ const {
 } = require("../helpers/productHelper");
 
 // Constants
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 12;
 const PRICE_RANGES = [
   { min: 0, max: 100, label: "$0 - $100" },
   { min: 100, max: 200, label: "$100 - $200" },
@@ -137,6 +137,7 @@ exports.getProducts = async (req, res) => {
       activeFilters,
       currentQuery: req.query,
       pagination,
+      totalProducts,
     });
   } catch (error) {
     console.error("Error:", error);
@@ -170,5 +171,46 @@ exports.getProductDetail = async (req, res) => {
   } catch (error) {
     console.error("Error:", error); // Thêm log
     res.status(500).send("Lỗi server");
+  }
+};
+
+// get recommended products (3 products have the highest average rating)
+// exports.getRecommendedProducts = async (req, res) => {
+//   try {
+//     const recommendedProducts = await Product.aggregate([
+//       {
+//         $lookup: {
+//           from: "reviews",
+//           localField: "_id",
+//           foreignField: "productId",
+//           as: "reviews",
+//         },
+//       },
+//       {
+//         $addFields: {
+//           avgRating: { $avg: "$reviews.rating" },
+//         },
+//       },
+//       { $sort: { avgRating: -1 } },
+//       { $limit: 3 },
+//     ]);
+
+//     res.json({ success: true, recommendedProducts });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+exports.getRecommendedProducts = async (req, res) => {
+  try {
+    const recommendedProducts = await Product.find()
+      .sort({ "ratings.average": -1 })
+      .limit(3);
+
+    res.json({ success: true, recommendedProducts });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

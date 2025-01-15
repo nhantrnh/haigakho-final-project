@@ -114,4 +114,35 @@ router.put(
   adminController.updateProfile
 );
 
+router.get("/orders", isAuthenticated, isAdmin, adminController.getOrders);
+router.get(
+  "/api/orders",
+  isAuthenticated,
+  isAdmin,
+  adminController.getOrdersData
+);
+
+router.get(
+  "/api/orders/:id",
+  isAuthenticated,
+  isAdmin,
+  adminController.getOrderDetails
+);
+
+router.put(
+  "/api/orders/:id/status",
+  isAuthenticated,
+  isAdmin,
+  adminController.updateOrderStatus
+);
+
+router.get("/reports", isAuthenticated, isAdmin, adminController.getReports);
+
+router.get(
+  "/api/reports/revenue",
+  isAuthenticated,
+  isAdmin,
+  adminController.getRevenueReport
+);
+
 module.exports = router;

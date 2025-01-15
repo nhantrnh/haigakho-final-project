@@ -2,11 +2,43 @@
 <% products.forEach(function(product) { %>
 <div class="col-12 col-md-4 col-lg-3 mb-5" data-product-id="<%= product._id %>">
   <a class="product-item" href="/shop/<%= product._id %>">
-    <img src="<%= product.imageUrl %>" class="img-fluid product-thumbnail" />
-    <h3 class="product-title"><%= product.name %></h3>
+    <!-- Product Badge (if needed) -->
+    <% if (product.isNew) { %>
+    <span class="product-badge badge-new">New</span>
+    <% } %>
+
+    <!-- Product Image -->
+    <div class="product-thumbnail">
+      <img src="<%= product.imageUrl %>" alt="<%= product.name %>" />
+      <!-- Stock Status (optional) -->
+      <div
+        class="stock-status <%= product.status == 'onStock' ? 'in-stock' : 'out-of-stock' %>"
+      >
+        <%= product.status == 'onStock' ? 'In Stock' : 'Out of Stock' %>
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <h3><%= product.name %></h3>
+
+    <!-- Product Rating (if available) -->
+    <div class="product-rating">
+      <div class="stars">
+        <% for (let i = 0; i < 5; i++) { %>
+        <i
+          class="fas fa-star <%= i < product.ratings.average ? 'text-warning' : 'text-muted' %>"
+        ></i>
+        <% } %>
+      </div>
+      <span class="rating-count"> (<%= product.ratings.count %>) </span>
+    </div>
+
+    <!-- Price -->
     <strong class="product-price">$<%= product.price %></strong>
+
+    <!-- Add to Cart Button -->
     <span class="icon-cross">
-      <img src="/images/cross.svg" class="img-fluid" />
+      <img src="/images/cross.svg" alt="Add to Cart" />
     </span>
   </a>
 </div>
