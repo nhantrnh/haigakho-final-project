@@ -86,5 +86,5 @@ const PORT = process.env.PORT || 3000;
 // });
 
 server.listen(PORT, function() {
-  console.log(`Server MAIN started on port https://localhost:${PORT}`);
+  console.log(`Server started on port https://localhost:${PORT}`);
 });
