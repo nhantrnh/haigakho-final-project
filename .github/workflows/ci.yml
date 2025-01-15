@@ -24,8 +24,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run build
-        run: npm run build
-
-      - name: Start the app (optional for production)
+      - name: Start the app
         run: npm start
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }} 
+        
