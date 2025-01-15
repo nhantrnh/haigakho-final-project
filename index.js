@@ -52,7 +52,8 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views")); // Add this line
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/test");
+//mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/test");
+mongoose.connect("mongodb://localhost:27017/test");
 
 // Routes
 app.use("/", require("./routes/pages"));

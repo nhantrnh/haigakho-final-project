@@ -1356,5 +1356,5 @@ const seedDatabase = async () => {
   }
 };
 
-//updateProducts();
-seedDatabase();
+updateProducts();
+//seedDatabase();
