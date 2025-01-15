@@ -834,3 +834,19 @@ exports.getTopProducts = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.signout = async (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    req.session.destroy();
+    res.clearCookie("connect.sid");
+
+    res.json({
+      success: true,
+      message: "Logout successful",
+    });
+    res.redirect('/');
+  });
+};

@@ -11,6 +11,7 @@ const {
 router.get("/users", isAuthenticated, isAdmin, adminController.getUsers);
 
 router.get("/", isAuthenticated, isAdmin, adminController.getDashboard);
+router.post("/signout", isAuthenticated, adminController.signout);
 
 router.get(
   "/api/users",
