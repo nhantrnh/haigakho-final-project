@@ -64,7 +64,7 @@
               >
             </li>
             <li>
-              <a class="dropdown-item user-dropdown-item" href="/orders"
+              <a class="dropdown-item user-dropdown-item" href="/my-orders"
                 >My Orders</a
               >
             </li>
@@ -125,6 +125,20 @@
     <p>Total price: $<span id="cart-total">0.00</span></p>
   </div>
   <div class="cart-footer text-center">
-    <a href="/cart" class="btn btn-primary">Checkout</a>
+    <a href="/checkout" class="btn btn-primary">Checkout</a>
   </div>
 </div>
+
+<script>
+  $(".cart-footer .btn-primary").click(function (e) {
+    e.preventDefault();
+
+    $.get("/auth/check", function (data) {
+      if (data.authenticated) {
+        window.location.href = "/checkout";
+      } else {
+        window.location.href = "/signin";
+      }
+    });
+  });
+</script>

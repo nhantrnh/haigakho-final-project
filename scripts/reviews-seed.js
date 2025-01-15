@@ -6,7 +6,7 @@ const User = require("../models/User");
 const { use } = require("passport");
 const Review = require("../models/Review");
 
-mongoose.connect("mongodb+srv://haigakho:haigakho@hcmus.iiqtx.mongodb.net/hagako-web?retryWrites=true&w=majority&appName=HCMUS");
+mongoose.connect("mongodb://localhost:27017/test");
 
 async function updateProducts() {
   try {
