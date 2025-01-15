@@ -58,18 +58,21 @@
                   <%= new Intl.NumberFormat('en-EN', { style: 'currency',
                     currency: 'USD' }).format(product.price) %>
                 </h2>
-
-                <div class="quantity-selector">
-                  <label for="product-quantity">Choose amount:</label>
-                  <div class="quantity-input">
-                    <button class="quantity-decrement">-</button>
-                    <input type="number" id="product-quantity" class="quantity-value" value="1" min="1" max="<%= product.stock %>" />
-                    <button class="quantity-increment">+</button>
+                <% if (product.stock > 0) { %>
+                  <div class="quantity-selector">
+                    <label for="product-quantity">Choose amount:</label>
+                    <div class="quantity-input">
+                      <button class="quantity-decrement">-</button>
+                      <input type="number" id="product-quantity" class="quantity-value" value="1" min="1" max="<%= product.stock %>" />
+                      <button class="quantity-increment">+</button>
+                    </div>
                   </div>
-                </div>
-                <button class="add-to-cart add-btn">
-                  <i class="fas fa-cart-plus"></i> ADD TO CART
-                </button>
+                  <button class="add-to-cart add-btn">
+                    <i class="fas fa-cart-plus"></i> ADD TO CART
+                  </button>
+                <% } else { %>
+                  <h4 style="font-weight: bold; text-align: center;">Please come back later</h4>
+                  <% } %>                               
               </aside>
             </div>
           </div>
