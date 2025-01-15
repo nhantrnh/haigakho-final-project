@@ -67,7 +67,7 @@ exports.createOrder = async (req, res) => {
 
     // Update stock
     for (const item of cart.items) {
-      await Product.findByIdAndUpdate(
+      const product = await Product.findByIdAndUpdate(
         item.productId,
         {
           $inc: { stock: -item.quantity },

@@ -16,16 +16,16 @@
           <option value="year">Yearly</option>
         </select>
       </div>
-      
+
       <div class="flex-1">
         <input type="date" id="startDate" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#3b5d50]">
       </div>
-      
+
       <div class="flex-1">
         <input type="date" id="endDate" class="w-full px-4 py-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#3b5d50]">
       </div>
-      
-      <button onclick="loadRevenueData()" class="px-6 py-2.5 bg-[#3b5d50] text-white rounded-xl hover:bg-[#2f4a40]">
+
+      <button onclick="loadRevenueData()" class="px-6 py-2.5 bg-[#3b5d50] text-gray-800 rounded-xl hover:bg-[#2f4a40]">
         Apply
       </button>
     </div>
@@ -74,86 +74,159 @@
   <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <canvas id="revenueChart"></canvas>
   </div>
+
+
+  <!-- Top Products Section -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Revenue Products</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Revenue</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Units Sold</th>
+          </tr>
+        </thead>
+        <tbody id="topProductsBody" class="bg-white divide-y divide-gray-200"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script>
-let revenueChart;
+  let revenueChart;
 
-async function loadRevenueData() {
-  const range = document.getElementById('timeRange').value;
-  const start = document.getElementById('startDate').value;
-  const end = document.getElementById('endDate').value;
+  async function loadRevenueData() {
+    const range = document.getElementById('timeRange').value;
+    const start = document.getElementById('startDate').value;
+    const end = document.getElementById('endDate').value;
 
-  try {
-    const response = await fetch(`/admin/api/reports/revenue?range=${range}&start=${start}&end=${end}`);
-    const data = await response.json();
+    try {
+      const [revenueResponse, topProductsResponse] = await Promise.all([
+        fetch(`/admin/api/reports/revenue?range=${range}&start=${start}&end=${end}`),
+        fetch(`/admin/api/reports/top-products?range=${range}&start=${start}&end=${end}`)
+      ]);
 
-    if (data.success) {
-      updateStats(data.summary);
-      updateChart(data.data, range);
+      const revenueData = await revenueResponse.json();
+      const topProductsData = await topProductsResponse.json();
+
+
+      if (revenueData.success) {
+        updateStats(revenueData.summary);
+        updateChart(revenueData.data, range);
+      }
+
+      if (topProductsData.success) {
+        loadTopProducts(topProductsData.data);
+        console.log(topProductsData.data);
+      }
+
+
+    } catch (error) {
+      console.error('Error loading revenue data:', error);
+      showToast('error', 'Failed to load revenue data');
     }
-  } catch (error) {
-    console.error('Error loading revenue data:', error);
-    showToast('error', 'Failed to load revenue data');
-  }
-}
-
-function updateStats(summary) {
-  document.getElementById('totalRevenue').textContent = `$${summary.totalRevenue.toFixed(2)}`;
-  document.getElementById('totalOrders').textContent = summary.totalOrders;
-  document.getElementById('avgOrderValue').textContent = `$${summary.avgOrderValue.toFixed(2)}`;
-}
-
-function updateChart(data, range) {
-  const ctx = document.getElementById('revenueChart').getContext('2d');
-  
-  if (revenueChart) {
-    revenueChart.destroy();
   }
 
-  revenueChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: data.map(item => item._id),
-      datasets: [{
-        label: 'Revenue',
-        data: data.map(item => item.revenue),
-        borderColor: '#3b5d50',
-        tension: 0.4,
-        fill: false
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: `Revenue Over Time (${range.charAt(0).toUpperCase() + range.slice(1)}ly)`
-        }
+  function updateStats(summary) {
+    document.getElementById('totalRevenue').textContent = `$${summary.totalRevenue.toFixed(2)}`;
+    document.getElementById('totalOrders').textContent = summary.totalOrders;
+    document.getElementById('avgOrderValue').textContent = `$${summary.avgOrderValue.toFixed(2)}`;
+  }
+
+  function updateChart(data, range) {
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+
+    if (revenueChart) {
+      revenueChart.destroy();
+    }
+
+    revenueChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.map(item => item._id),
+        datasets: [{
+          label: 'Revenue',
+          data: data.map(item => item.revenue),
+          borderColor: '#3b5d50',
+          tension: 0.4,
+          fill: false
+        }]
       },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: value => `$${value}`
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: `Revenue Over Time (${range.charAt(0).toUpperCase() + range.slice(1)}ly)`
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => `$${value}`
+            }
           }
         }
       }
-    }
+    });
+  }
+
+  // Set default dates
+  document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date();
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+
+    document.getElementById('startDate').value = lastMonth.toISOString().split('T')[0];
+    document.getElementById('endDate').value = today.toISOString().split('T')[0];
+
+    loadRevenueData();
   });
-}
 
-// Set default dates
-document.addEventListener('DOMContentLoaded', () => {
-  const today = new Date();
-  const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
-  
-  document.getElementById('startDate').value = lastMonth.toISOString().split('T')[0];
-  document.getElementById('endDate').value = today.toISOString().split('T')[0];
-  
-  loadRevenueData();
-});
+  // Update when range changes
+  document.getElementById('timeRange').addEventListener('change', loadRevenueData);
 
-// Update when range changes
-document.getElementById('timeRange').addEventListener('change', loadRevenueData);
+
+
+  // Add to existing script in reports.ejs
+  function loadTopProducts(data) {
+
+    const tbody = document.getElementById('topProductsBody');
+    tbody.innerHTML = data.map(product => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <div class="h-10 w-10 flex-shrink-0">
+                <img class="h-10 w-10 rounded-lg object-cover" src="${product.productImage}" alt="${product.productName}">
+              </div>
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">${product.productName}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            $${product.totalRevenue.toFixed(2)}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+            ${product.totalQuantity}
+          </td>
+        </tr>
+      `).join('');
+  }
+
+  function showToast(type, message) {
+    // Add your toast notification implementation
+    // Example using Toastify or other library
+    Toastify({
+      text: message,
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: type === "success" ? "#3b5d50" : "#ef4444",
+    }).showToast();
+  }
+
+  // Modify existing loadRevenueData function
 </script>
