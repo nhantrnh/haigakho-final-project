@@ -38,9 +38,9 @@ module.exports = function (passport) {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID, // Sử dụng biến môi trường
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Sử dụng biến môi trường
-        callbackURL: process.env.GOOGLE_CALLBACK_URL,  // Cấu hình URL callback trong biến môi trường
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL,
       },
       async (token, tokenSecret, profile, done) => {
         try {
@@ -50,10 +50,10 @@ module.exports = function (passport) {
           if (!user) {
             // Nếu chưa, tạo tài khoản mới
             user = new User({
-              username: profile.displayName, // Dùng tên hiển thị của Google
+              username: profile.displayName,
               email: profile.emails[0].value,
               name: profile.displayName,
-              avatar: profile.photos[0].value, // Dùng ảnh đại diện từ Google
+              avatar: profile.photos[0].value,
               role: "user",
               status: "active",
               isEmailActive: true,
