@@ -1,19 +1,8 @@
-<nav
-  class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark"
-  aria-label="Hagako navigation bar"
->
+<nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Hagako navigation bar">
   <div class="container">
     <a class="navbar-brand" href="/">Hagako<span>.</span></a>
 
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarsHagako"
-      aria-controls="navbarsHagako"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsHagako" aria-controls="navbarsHagako" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -28,12 +17,6 @@
         <li class="nav-item <%= page === 'about' ? 'active' : '' %>">
           <a class="nav-link" href="/about">About us</a>
         </li>
-        <li class="nav-item <%= page === 'services' ? 'active' : '' %>">
-          <a class="nav-link" href="/services">Services</a>
-        </li>
-        <li class="nav-item <%= page === 'blog' ? 'active' : '' %>">
-          <a class="nav-link" href="/blog">Blog</a>
-        </li>
         <li class="nav-item <%= page === 'contact' ? 'active' : '' %>">
           <a class="nav-link" href="/contact">Contact us</a>
         </li>
@@ -43,44 +26,25 @@
         <% if (locals.user) { %>
         <!-- Logged in state -->
         <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="userDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="/images/user-icon.svg" alt="User" class="user-avatar" />
             <%= user.username %>
           </a>
-          <ul
-            class="dropdown-menu dropdown-menu-end user-dropdown"
-            aria-labelledby="userDropdown"
-          >
+          <ul class="dropdown-menu dropdown-menu-end user-dropdown" aria-labelledby="userDropdown">
             <li>
-              <a class="dropdown-item user-dropdown-item" href="/profile"
-                >Profile</a
-              >
+              <a class="dropdown-item user-dropdown-item" href="/profile">Profile</a>
             </li>
             <li>
-              <a class="dropdown-item user-dropdown-item" href="/my-orders"
-                >My Orders</a
-              >
+              <a class="dropdown-item user-dropdown-item" href="/my-orders">My Orders</a>
             </li>
             <li>
-              <a class="dropdown-item user-dropdown-item" href="/settings"
-                >Settings</a
-              >
+              <a class="dropdown-item user-dropdown-item" href="/settings">Settings</a>
             </li>
-            <li><hr class="dropdown-divider" /></li>
             <li>
-              <a
-                class="dropdown-item user-dropdown-item"
-                href="#"
-                id="signoutBtn"
-                >Sign out</a
-              >
+              <hr class="dropdown-divider" />
+            </li>
+            <li>
+              <a class="dropdown-item user-dropdown-item" href="#" id="signoutBtn">Sign out</a>
             </li>
           </ul>
         </li>
@@ -94,14 +58,8 @@
         </li>
         <% } %>
 
-        <li
-          class="cart cart-icon-container nav-item <%= page === 'cart' ? 'active' : '' %>"
-        >
-          <a
-            class="nav-link"
-            href="javascript:void(0)"
-            onclick="toggleCartSidebar()"
-          >
+        <li class="cart cart-icon-container nav-item <%= page === 'cart' ? 'active' : '' %>">
+          <a class="nav-link" href="javascript:void(0)" onclick="toggleCartSidebar()">
             <img src="/images/cart.svg" alt="Cart" />
             <span id="cart-count">0</span>
           </a>
@@ -130,10 +88,10 @@
 </div>
 
 <script>
-  $(".cart-footer .btn-primary").click(function (e) {
+  $(".cart-footer .btn-primary").click(function(e) {
     e.preventDefault();
 
-    $.get("/auth/check", function (data) {
+    $.get("/auth/check", function(data) {
       if (data.authenticated) {
         window.location.href = "/checkout";
       } else {

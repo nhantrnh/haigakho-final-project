@@ -145,4 +145,11 @@ router.get(
   adminController.getRevenueReport
 );
 
+router.get(
+  "/api/reports/top-products",
+  isAuthenticated,
+  isAdmin,
+  adminController.getTopProducts
+);
+
 module.exports = router;

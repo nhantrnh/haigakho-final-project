@@ -795,3 +795,42 @@ exports.getRevenueReport = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.getTopProducts = async (req, res) => {
+  try {
+    const { range = "week", start, end } = req.query;
+    let matchStage = { status: { $nin: ["cancelled"] } };
+
+    if (start && end) {
+      matchStage.createdAt = {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      };
+    }
+
+    const topProducts = await Order.aggregate([
+      { $match: matchStage },
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: "$items.productId",
+          totalRevenue: {
+            $sum: { $multiply: ["$items.price", "$items.quantity"] },
+          },
+          totalQuantity: { $sum: "$items.quantity" },
+          productName: { $first: "$items.name" },
+          productImage: { $first: { $arrayElemAt: ["$items.imageUrl", 0] } },
+        },
+      },
+      { $sort: { totalRevenue: -1 } },
+      { $limit: 5 },
+    ]);
+
+    res.json({
+      success: true,
+      data: topProducts,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

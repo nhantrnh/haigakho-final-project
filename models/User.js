@@ -23,7 +23,9 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    default: "User",
+    default: function () {
+      return this.username; // Sử dụng giá trị của `username` làm mặc định cho `name`
+    },
   },
   address: { type: String, default: "" },
   avatar: {

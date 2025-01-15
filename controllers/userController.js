@@ -284,11 +284,8 @@ exports.resetPassword = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     id = req.user._id;
-    console.log(id);
     // Get order count
     const orderCount = await Order.countDocuments({ userId: req.user._id });
-
-    console.log(orderCount);
 
     res.render("users/profile", {
       user: req.user,

@@ -87,7 +87,7 @@
               <div class="text-center mt-2">
                 <span
                   >Don't have an account?
-                  <a href="signin.html">Register here</a></span
+                  <a href="/signup">Register here</a></span
                 >
               </div>
             </div>
@@ -109,32 +109,5 @@
     <script src="js/tiny-slider.js"></script>
     <script src="js/custom.js"></script>
     <script src="js/auth.js"></script>
-    <!-- <script>
-      document.getElementById("loginForm").addEventListener("submit", function(event) {
-        event.preventDefault(); 
-    
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-    
-        fetch("/signin", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ username, password })
-        })
-          .then(response => {
-            if (response.ok) {
-              window.location.href = "/";
-            } else {
-              alert("Tên đăng nhập hoặc mật khẩu không đúng.");
-            }
-          })
-          .catch(error => {
-            console.error("Có lỗi xảy ra: ", error);
-            alert("Đã xảy ra lỗi khi đăng nhập.");
-          });
-      });
-    </script> -->
   </body>
 </html>
