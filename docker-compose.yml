@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  hakago-web:
+    build:
+      context: .
+      dockerfile: Dockerfile # Đảm bảo rằng Dockerfile ở đúng thư mục
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - PORT=${PORT}
+      - NODE_ENV=${NODE_ENV}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - BASE_URL=${BASE_URL}
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongodb_data:

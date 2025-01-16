@@ -1,0 +1,20 @@
+# Sử dụng Node.js làm base image
+FROM node:18
+
+# Tạo thư mục làm việc trong container
+WORKDIR /usr/src/app
+
+# Copy package.json và package-lock.json vào container
+COPY package*.json ./
+
+# Cài đặt các dependencies
+RUN npm install
+
+# Copy tất cả các file còn lại vào container
+COPY . .
+
+# Expose port mà ứng dụng sẽ chạy
+EXPOSE 3000
+
+# Chạy ứng dụng khi container khởi động
+CMD ["npm", "start"]
