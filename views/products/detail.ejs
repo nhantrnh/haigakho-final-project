@@ -37,7 +37,7 @@
                   <div class="carousel-inner">
                     <% product.imageUrl.forEach((image, index) => { %>
                       <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                        <img src="<%= image %>" class="d-block w-100 product-image" alt="<%= product.name %>" id="mainProductImage" />
+                        <img src="<%= image %>" class="product-image" alt="<%= product.name %>" id="mainProductImage" />
                       </div>
                     <% }) %>
                   </div>

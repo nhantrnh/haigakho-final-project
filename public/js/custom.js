@@ -266,9 +266,24 @@ $(document).ready(function () {
 
   // Image Zoom (using a library like ElevateZoom or similar)
   // Example using jQuery Zoom (https://www.jacklmoore.com/zoom/)
-  $(".product-image-container").zoom({
-    url: $("#mainProductImage").attr("src"), // Use the product image URL for zooming
-    magnify: 1.5,
+  function updateZoom() {
+    const activeImageSrc = $(".carousel-item.active #mainProductImage").attr(
+      "src"
+    );
+    if (activeImageSrc) {
+      $(".product-image-container").zoom({
+        url: activeImageSrc, // Use the product image URL in the active carousel-item for zooming
+        magnify: 1.5,
+      });
+    }
+  }
+
+  // Gọi hàm ngay khi trang được tải để khởi tạo zoom cho hình ảnh ban đầu
+  updateZoom();
+
+  // Lắng nghe sự kiện thay đổi slide trên carousel
+  $("#productCarousel").on("slid.bs.carousel", function () {
+    updateZoom(); // Cập nhật zoom khi slide thay đổi
   });
 
   $(".quantity-increment").click(function () {

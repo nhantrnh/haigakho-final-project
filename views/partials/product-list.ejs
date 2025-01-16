@@ -9,7 +9,7 @@
 
     <!-- Product Image -->
     <div class="product-thumbnail">
-      <img src="<%= product.imageUrl %>" alt="<%= product.name %>" />
+      <img src="<%= product.imageUrl[0] %>" alt="<%= product.name %>" />
       <!-- Stock Status (optional) -->
       <div
         class="stock-status <%= product.status == 'onStock' ? 'in-stock' : 'out-of-stock' %>"
