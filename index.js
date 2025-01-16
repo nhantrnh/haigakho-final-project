@@ -83,6 +83,10 @@ const PORT = process.env.PORT || 3000;
 //   console.log(`Server is running on port ${PORT}`);
 // });
 
-server.listen(PORT, function() {
-  console.log(`Server started on port https://localhost:${PORT}`);
+// server.listen(PORT, function() {
+//   console.log(`Server started on port https://localhost:${PORT}`);
+// });
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${PORT}`);
 });
