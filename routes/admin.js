@@ -153,4 +153,11 @@ router.get(
   adminController.getTopProducts
 );
 
+router.get(
+  "/api/dashboard",
+  isAuthenticated,
+  isAdmin,
+  adminController.getDashboardData
+);
+
 module.exports = router;

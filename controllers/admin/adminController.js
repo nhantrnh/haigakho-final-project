@@ -847,6 +847,75 @@ exports.signout = async (req, res) => {
       success: true,
       message: "Logout successful",
     });
-    res.redirect('/');
+    res.redirect("/");
   });
+};
+
+exports.getDashboardData = async (req, res) => {
+  try {
+    // Get stats data
+    const totalOrders = await Order.countDocuments();
+    const totalRevenue = await Order.aggregate([
+      { $match: { status: { $ne: "cancelled" } } },
+      { $group: { _id: null, total: { $sum: "$total" } } },
+    ]);
+
+    // Total customers la nhung user da mua hang it nhat 1 lan
+    const distinctCustomers = await Order.distinct("userId", {
+      status: { $ne: "cancelled" },
+    });
+    const totalCustomers = distinctCustomers.length;
+
+    const totalProducts = await Product.countDocuments();
+
+    // Get monthly revenue data
+    const monthlyRevenue = await Order.aggregate([
+      { $match: { status: { $ne: "cancelled" } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          revenue: { $sum: "$total" },
+          orders: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+      { $limit: 12 },
+    ]);
+
+    // Get top products
+    const topProducts = await Order.aggregate([
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: "$items.productId",
+          name: { $first: "$items.name" },
+          total: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
+          quantity: { $sum: "$items.quantity" },
+        },
+      },
+      { $sort: { total: -1 } },
+      { $limit: 5 },
+    ]);
+
+    // Get recent orders
+    const recentOrders = await Order.find()
+      .populate("userId", "name email")
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    res.json({
+      success: true,
+      stats: {
+        totalOrders,
+        totalRevenue: totalRevenue[0]?.total || 0,
+        totalCustomers,
+        totalProducts,
+      },
+      monthlyRevenue,
+      topProducts,
+      recentOrders,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };

@@ -8,8 +8,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm text-gray-500">Total Orders</p>
-          <h3 class="text-2xl font-bold">2,651</h3>
-          <p class="text-sm text-green-500">+12.5%</p>
+          <h3 class="text-2xl font-bold" id="totalOrders">-</h3>
         </div>
       </div>
     </div>
@@ -21,8 +20,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm text-gray-500">Revenue</p>
-          <h3 class="text-2xl font-bold">$86,404</h3>
-          <p class="text-sm text-green-500">+8.2%</p>
+          <h3 class="text-2xl font-bold" id="totalRevenue">-</h3>
         </div>
       </div>
     </div>
@@ -34,8 +32,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm text-gray-500">Customers</p>
-          <h3 class="text-2xl font-bold">1,245</h3>
-          <p class="text-sm text-green-500">+5.2%</p>
+          <h3 class="text-2xl font-bold" id="totalCustomers">-</h3>
         </div>
       </div>
     </div>
@@ -47,8 +44,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm text-gray-500">Products</p>
-          <h3 class="text-2xl font-bold">450</h3>
-          <p class="text-sm text-green-500">+2.4%</p>
+          <h3 class="text-2xl font-bold" id="totalProducts">-</h3>
         </div>
       </div>
     </div>
@@ -66,28 +62,184 @@
     </div>
   </div>
 
-  <!-- Recent Orders Table -->
-  <div class="bg-white rounded-lg shadow-sm">
-    <div class="p-6">
-      <h3 class="text-lg font-semibold mb-4">Recent Orders</h3>
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr
-              class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              <th class="p-3">Order ID</th>
-              <th class="p-3">Customer</th>
-              <th class="p-3">Product</th>
-              <th class="p-3">Amount</th>
-              <th class="p-3">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <!-- Sample data rows -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+
 </div>
+
+
+<script>
+  let salesChart = new Chart(document.getElementById('salesChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Monthly Revenue',
+        data: [],
+        borderColor: '#3b5d50',
+        backgroundColor: 'rgba(59, 93, 80, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: value => `$${value.toLocaleString()}`
+          }
+        }
+      }
+    }
+  });
+
+  let productsChart = new Chart(document.getElementById('productsChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: [],
+      datasets: [{
+        data: [],
+        backgroundColor: ['#3b5d50', '#2f4a40', '#4c7a6a', '#5b9680', '#6ab395']
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right'
+        }
+      }
+    }
+  });
+
+  async function loadDashboardData() {
+    try {
+      const response = await fetch('/admin/api/dashboard');
+      const data = await response.json();
+
+      if (data.success) {
+        updateStats(data.stats);
+        updateSalesChart(data.monthlyRevenue);
+        updateProductsChart(data.topProducts);
+        updateRecentOrders(data.recentOrders);
+      }
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    }
+  }
+
+  function updateStats(stats) {
+    document.getElementById('totalOrders').textContent = stats.totalOrders.toLocaleString();
+    document.getElementById('totalRevenue').textContent = `$${stats.totalRevenue.toLocaleString()}`;
+    document.getElementById('totalCustomers').textContent = stats.totalCustomers.toLocaleString();
+    document.getElementById('totalProducts').textContent = stats.totalProducts.toLocaleString();
+  }
+
+  function updateSalesChart(data) {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+
+    if (salesChart) {
+      salesChart.destroy();
+    }
+
+    salesChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.map(item => item._id),
+        datasets: [{
+          label: 'Revenue',
+          data: data.map(item => item.revenue),
+          borderColor: '#3b5d50',
+          tension: 0.4,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Monthly Revenue'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => `$${value}`
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function updateProductsChart(data) {
+    const ctx = document.getElementById('productsChart').getContext('2d');
+
+    if (productsChart) {
+      productsChart.destroy();
+    }
+
+    productsChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: data.map(item => item.name),
+        datasets: [{
+          data: data.map(item => item.total),
+          backgroundColor: [
+            '#3b5d50', '#2f4a40', '#4c7a6a', '#5b9680', '#6ab395'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Top Products by Revenue'
+          }
+        }
+      }
+    });
+  }
+
+  function updateRecentOrders(orders) {
+    const tbody = document.querySelector('tbody');
+    tbody.innerHTML = orders.map(order => `
+    <tr class="hover:bg-gray-50">
+      <td class="p-3">#${order.orderNumber}</td>
+      <td class="p-3">${order.userId?.name || 'Guest'}</td>
+      <td class="p-3">${order.items[0].name}${order.items.length > 1 ? ` +${order.items.length - 1} more` : ''}</td>
+      <td class="p-3">$${order.total.toFixed(2)}</td>
+      <td class="p-3">
+        <span class="px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}">
+          ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+        </span>
+      </td>
+    </tr>
+  `).join('');
+  }
+
+  function getStatusColor(status) {
+    const colors = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      confirmed: 'bg-blue-100 text-blue-800',
+      shipping: 'bg-indigo-100 text-indigo-800',
+      delivered: 'bg-green-100 text-green-800',
+      cancelled: 'bg-red-100 text-red-800'
+    };
+    return colors[status] || 'bg-gray-100 text-gray-800';
+  }
+
+  // Load data when page loads
+  document.addEventListener('DOMContentLoaded', loadDashboardData);
+</script>
