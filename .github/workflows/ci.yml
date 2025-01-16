@@ -27,5 +27,16 @@ jobs:
       - name: Start the app
         run: node index.js
         env:
-          MONGO_URI: ${{ secrets.MONGO_URI }} 
+            MONGODB_URI: ${{ secrets.MONGODB_URI }}
+            PORT: ${{ secrets.PORT }}
+            NODE_ENV: ${{ secrets.NODE_ENV }}
+            EMAIL_USER: ${{ secrets.EMAIL_USER }}
+            EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+            BASE_URL: ${{ secrets.BASE_URL }}
+            GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_CALLBACK_URL: ${{ secrets.GOOGLE_CALLBACK_URL }}
+            FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
+            FACEBOOK_APP_SECRET: ${{ secrets.FACEBOOK_APP_SECRET }}
+            FACEBOOK_CALLBACK_URL: ${{ secrets.FACEBOOK_CALLBACK_URL }}
         
