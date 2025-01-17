@@ -11,3 +11,5 @@
 # Demo
 
 **Link video: **
+- Chức năng cơ bản: https://www.youtube.com/watch?v=Ftg_oCwReFk 
+- Chức năng nâng cao: https://youtu.be/-z_xl7yon3k
